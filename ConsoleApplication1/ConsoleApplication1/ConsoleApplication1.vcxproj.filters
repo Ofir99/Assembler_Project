@@ -18,5 +18,11 @@
     <ClCompile Include="ConsoleApplication1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hash_Table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="get_func.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
