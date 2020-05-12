@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication1.cpp">
+    <ClCompile Include="get_reg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleApplication1.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
