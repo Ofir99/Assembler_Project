@@ -24,5 +24,13 @@
     <ClCompile Include="get_opcode.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="new_hash_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

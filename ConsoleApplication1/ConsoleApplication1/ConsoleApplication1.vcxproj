@@ -154,6 +154,10 @@
     <ClCompile Include="ConsoleApplication1.c" />
     <ClCompile Include="get_opcode.c" />
     <ClCompile Include="get_reg.c" />
+    <ClCompile Include="new_hash_table.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
