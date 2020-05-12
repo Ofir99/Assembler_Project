@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main() {
-	char* a = "t";
+	char* a = "sw";
 
-	get_reg(a);
+	printf("opcode num is %d", get_opcode(a));
 	return 0;
 }

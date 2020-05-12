@@ -21,10 +21,7 @@
     <ClCompile Include="ConsoleApplication1.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hash_Table.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="get_func.c">
+    <ClCompile Include="get_opcode.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
