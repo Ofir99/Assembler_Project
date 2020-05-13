@@ -1,2 +1,2 @@
 # Organziation Computer Project
-BUilding Assembly
+Building Assembly
