@@ -18,13 +18,13 @@
     <ClCompile Include="get_reg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleApplication1.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="get_opcode.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="new_hash_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication1.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="get_opcode.c" />
     <ClCompile Include="get_reg.c" />
     <ClCompile Include="new_hash_table.c" />
