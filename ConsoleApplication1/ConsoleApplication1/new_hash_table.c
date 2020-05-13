@@ -35,8 +35,8 @@ HashTable* create_table() {// size need to be prime number
 
 	return table;
 }
-
-void free_item(label* item) {
+//this function can't used outside this file
+static void free_item(label* item) {
 	if (item == NULL) {
 		return;
 	}
@@ -58,9 +58,9 @@ void free_table(HashTable* table) {
 }
 
 
-
+//this function can't used outside this file
 /* this function gives a unique hash code to the given key */
-int hashcode(char* label_name)
+static int  hashcode(char* label_name)
 {
 	int i = 0;
 	int hash = 0;
@@ -99,6 +99,7 @@ void insert_label(HashTable* table ,char* label_name,int  adress)
 
 }
 
+
 void print_table(HashTable* table) {
 	label* temp = NULL;
 	int i = 0;
@@ -111,6 +112,7 @@ void print_table(HashTable* table) {
 			}
 	}
 }
+
 
 int get_adress_from_label(HashTable* table, char* label_name) {
 	label* temp = NULL;
