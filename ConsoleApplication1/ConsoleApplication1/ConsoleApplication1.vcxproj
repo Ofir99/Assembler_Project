@@ -151,9 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
     <ClCompile Include="get_opcode.c" />
     <ClCompile Include="get_reg.c" />
+    <ClCompile Include="mainpaaone.c" />
     <ClCompile Include="new_hash_table.c" />
     <ClCompile Include="passone.c" />
   </ItemGroup>
