@@ -10,7 +10,7 @@ int checking_label(char str[]) //  checking if its lable or not, returnning 1 if
 	while (str[i] != '#' && str[i] != '\0')
 	{
 		if (str[i] == ':')
-			return 1;
+			return i;
 		i = i + 1;
 
 	}
@@ -122,7 +122,14 @@ int extract_next(char ins[], char reg[], int counter)
 	int j = 0;
 	int counterf = counter;
 	while (ins[counterf] == ' ' || ins[counterf] == ',' || ins[counterf] == '	')
+	{
 		counterf = counterf + 1;
+	}
+		
+	if (ins[counterf] =='\0')
+	{
+		return -1;
+	}
 	while (ins[counterf] != ' ' && ins[counterf] != ',' && ins[counterf] != '#' && ins[counterf] != '	')
 	{
 		reg[j] = ins[counterf];
@@ -161,7 +168,7 @@ int main()
 	while (fgets(instruction, 500, f1) != NULL)
 	{
 		label_c = checking_label(instruction);
-		if (label_c == 1) //  its a label 
+		if (label_c != 0) //  its a label 
 		{
 			clean_label(instruction, label);
 			//printf("%s\n", label);
@@ -169,28 +176,32 @@ int main()
 			
 			//sending to daniela's functions (label, PC+1)
 		}
-		else
-		{
-			counter = extract_first(instruction, first);
-			counter = extract_next(instruction, reg1, counter);
-			counter = extract_next(instruction, reg2, counter);
-			counter = extract_next(instruction, reg3, counter);
-			extract_next(instruction, imm, counter);
-
-			handling_imm(imm, new_imm);
-			opcode = get_opcode(first);
-			//printf("%d", 3);
 		
-			regg1 = get_reg(reg1);
-			regg2 = get_reg(reg2);
-			regg3 = get_reg(reg3);
-			fprintf(f2, "%02X", opcode);
-			fprintf(f2, "%X", regg1);
-			fprintf(f2, "%X", regg2);
-			fprintf(f2, "%X", regg3);
-			fprintf(f2, " %s\n", new_imm);
-			PC = PC + 1;
+		
+			counter = extract_next(instruction, first, label_c);
+			if (counter != -1)
+			{
+				counter = extract_next(instruction, reg1, counter);
+				counter = extract_next(instruction, reg2, counter);
+				counter = extract_next(instruction, reg3, counter);
+				extract_next(instruction, imm, counter);
 
+				handling_imm(imm, new_imm);
+				opcode = get_opcode(first);
+				//printf("%d", 3);
+
+				regg1 = get_reg(reg1);
+				regg2 = get_reg(reg2);
+				regg3 = get_reg(reg3);
+				fprintf(f2, "%02X", opcode);
+				fprintf(f2, "%X", regg1);
+				fprintf(f2, "%X", regg2);
+				fprintf(f2, "%X", regg3);
+				fprintf(f2, " %s\n", new_imm);
+				PC = PC + 1;
+			}
+				
+			
 
 
 
@@ -212,7 +223,7 @@ int main()
 
 
 
-		}
+		
 
 
 	}
