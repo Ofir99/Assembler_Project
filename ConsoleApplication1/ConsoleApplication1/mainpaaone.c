@@ -10,7 +10,7 @@ int checking_label(char str[]) //  checking if its lable or not, returnning 1 if
 	while (str[i] != '#' && str[i] != '\0')
 	{
 		if (str[i] == ':')
-			return i;
+			return i+1;
 		i = i + 1;
 
 	}
@@ -67,7 +67,7 @@ void clean_label(char ins[], char label[])
 	int i = 0, j = 0;
 	while (ins[i] != ':')
 	{
-		if (ins[i] != ' ')
+		if (ins[i] != ' ' && ins[i] != '	')
 		{
 			label[j] = ins[i];
 			j = j + 1;
@@ -126,7 +126,7 @@ int extract_next(char ins[], char reg[], int counter)
 		counterf = counterf + 1;
 	}
 		
-	if (ins[counterf] =='\0')
+	if (ins[counterf] =='\0' || ins[counterf]=='#')
 	{
 		return -1;
 	}
