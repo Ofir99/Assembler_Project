@@ -155,6 +155,7 @@
     <ClCompile Include="get_reg.c" />
     <ClCompile Include="mainpaaone.c" />
     <ClCompile Include="new_hash_table.c" />
+    <ClCompile Include="passtwo.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
