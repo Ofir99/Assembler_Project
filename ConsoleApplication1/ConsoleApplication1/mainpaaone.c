@@ -152,7 +152,7 @@ int extract_next(char ins[], char reg[], int counter)
 }
 
 
-int main( int argc, char* argv[])
+HashTable* passoneMain( int argc, char* argv[])
 {
 	char instruction[500] = { 0 };
 	char label[50] = { 0 };
@@ -200,7 +200,7 @@ int main( int argc, char* argv[])
 
 				handling_imm(imm, new_imm);
 				opcode = get_opcode(first);
-				//printf("%d", 3);
+				
 
 				regg1 = get_reg(reg1);
 				regg2 = get_reg(reg2);
@@ -212,41 +212,16 @@ int main( int argc, char* argv[])
 				fprintf(f2, " %s\n", new_imm);
 				PC = PC + 1;
 			}
-				
 			
-
-
-
-			//int a = atoi(test);
-			//printf("%d\n", a);
-			//char hex[10] = { '0' };
-			//sprintf(hex, "%03X", a);
-			//printf("%s\n", hex);
-			//PC = PC + 1;
-			//printf("%x\n", hex);
-
-			//int n=12 ;
-			//char binary[33] = { '0' };
-
-
-			//decimal_to_binary(n, binary);
-
-			//printf("Binary string of %d is: %s\n", n, binary);
-
-
-
-		
-
-
 	}
 
 
-	//printf("%s\n", instruction);
+	
 
 	fclose(f1);
 	fclose(f2);
-	print_table(table);
-	free_table(table);
-	return 0;
+	
+	//free_table(table);
+	return table;
 }
 

@@ -1,5 +1,15 @@
-add $t2, $t1, $t0, 0 # $t2 = $t1 + $t0
+fib:
+	add $sp, $sp, $imm, -3		# adjust stack for 3 items
+	sw $s0, $sp, $imm, 2
+		# save $s0
+	sw $ra, $sp, $imm, 1		# save return address
+	sw $a0, $sp, $imm, 0		# save argument
+
+	Lable: add $t0, $zero, $imm, 1		# $t0 = 1
+	bgt $imm, $a0, $t0, L1		# jump to L1 if x > 1
+	add $v0, $a0, $zero, 0		# otherwise, fib(x) = x, copy input
+	beq $imm, $zero, $zero, L2	# jump to L2
 L1:
-sub $t2, $t2, $imm, 1
-L3:
-jal $imm, $zero, $zero, L4 # function call L4, save return addr in $ra
+	sub $a0, $a0, $imm, 1		# calculate x - 1
+	jal $imm, $zero, $zero, fib	# calc $v0=fib(x-1)
+	add $s0, $v0, $imm, 0		
