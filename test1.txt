@@ -4,6 +4,7 @@ fib:
 		# save $s0
 	sw $ra, $sp, $imm, 1		# save return address
 	sw $a0, $sp, $imm, 0		# save argument
+
 	Lable: add $t0, $zero, $imm, 1		# $t0 = 1
 	bgt $imm, $a0, $t0, L1		# jump to L1 if x > 1
 	add $v0, $a0, $zero, 0		# otherwise, fib(x) = x, copy input

@@ -88,44 +88,44 @@ void clean_label(char ins[], char label[])
 	label[j] = '\0';
 }
 
-void decimal_to_binary(int n, char binary[], int k) // binary of k-1 bits
-{
-	int c, d, count;
+//void decimal_to_binary(int n, char binary[], int k) // binary of k-1 bits
+//{
+//	int c, d, count;
+//
+//
+//	count = 0;
+//
+//	for (c = k; c >= 0; c--)
+//	{
+//		d = n >> c;
+//
+//		if (d & 1)
+//			binary[count] = 1 + '0';
+//
+//		else
+//			binary[count] = 0 + '0';
+//
+//		count++;
+//	}
+//	binary[count] = '\0';
+//
+//
+//}
 
-
-	count = 0;
-
-	for (c = k; c >= 0; c--)
-	{
-		d = n >> c;
-
-		if (d & 1)
-			binary[count] = 1 + '0';
-
-		else
-			binary[count] = 0 + '0';
-
-		count++;
-	}
-	binary[count] = '\0';
-
-
-}
-
-int extract_first(char ins[], char first[]) //extract the instruction word, returning the end index of it. 
-{
-	int i = 0, j = 0;
-	while (ins[i] == ' ' || ins[i] == '	')
-		i = i + 1;
-	while (ins[i] != ' ' && ins[i] != '	')
-	{
-		first[j] = ins[i];
-		j = j + 1;
-		i = i + 1;
-	}
-	first[j] = '\0';
-	return i;
-}
+//int extract_first(char ins[], char first[]) //extract the instruction word, returning the end index of it. 
+//{
+//	int i = 0, j = 0;
+//	while (ins[i] == ' ' || ins[i] == '	')
+//		i = i + 1;
+//	while (ins[i] != ' ' && ins[i] != '	')
+//	{
+//		first[j] = ins[i];
+//		j = j + 1;
+//		i = i + 1;
+//	}
+//	first[j] = '\0';
+//	return i;
+//}
 
 int extract_next(char ins[], char reg[], int counter)
 {
