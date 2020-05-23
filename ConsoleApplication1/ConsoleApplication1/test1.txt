@@ -1,0 +1,5 @@
+add $t2, $t1, $t0, 0 # $t2 = $t1 + $t0
+L1:
+sub $t2, $t2, $imm, 1
+L3:
+jal $imm, $zero, $zero, L4 # function call L4, save return addr in $ra

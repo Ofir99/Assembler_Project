@@ -2,7 +2,10 @@
 #include <string.h>
 #include "common.h"
 
-
+#define NULL_ERROR(NAME) if (NAME == NULL) {\
+	printf("table allocation failed\n");\
+	exit(1);\
+}
 
 label* create_label(char* name,int adress) {
 	label* new_label = NULL;
@@ -25,6 +28,8 @@ HashTable* create_table() {// size need to be prime number
 	int i = 0;
 	
 	HashTable* table = (HashTable*)malloc(sizeof(HashTable));
+	NULL_ERROR(table)
+
 	table->size = SIZE;
 	table->items = (label**)malloc(SIZE*sizeof(label*));
 
@@ -104,10 +109,11 @@ void print_table(HashTable* table) {
 	label* temp = NULL;
 	int i = 0;
 	for (i = 0; i < SIZE; i++) {
+
 		temp = *(table->items+i);
 		while (temp != NULL) {
 				
-				printf("label's name is: %s, adress: %d, hash: %d \n ",temp->name, temp->adress, i);
+				printf("label's name is: %s, adress: %d, hash: %d \n",temp->name, temp->adress, i);
 				temp = temp->next;
 			}
 	}
@@ -128,4 +134,3 @@ int get_adress_from_label(HashTable* table, char* label_name) {
 	printf("ERROR: LABEL NOT FOUND\n");
 	return -1;
 }
-

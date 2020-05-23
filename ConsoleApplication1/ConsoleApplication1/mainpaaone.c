@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "common.h";
+#include "common.h"
 
 int checking_label(char str[]) //  checking if its lable or not, returnning 1 if its a label, or 0 otherwise. 
 {
@@ -152,7 +152,7 @@ int extract_next(char ins[], char reg[], int counter)
 }
 
 
-int main()
+int main( int argc, char* argv[])
 {
 	char instruction[500] = { 0 };
 	char label[50] = { 0 };
@@ -165,15 +165,17 @@ int main()
 	int counter = 0;
 	int opcode = 0, regg1 = 0, regg2 = 0, regg3 = 0;
 	HashTable* table = NULL;
-	//table= create_table();
-	FILE *f1 = fopen("C:\\Users\\Mor\\source\\repos\\danielashabat\\Assembler_Project\\test1.txt", "r");
-	FILE *f2 = fopen("C:\\Users\\Mor\\source\\repos\\danielashabat\\Assembler_Project\\write.txt", "w");
-	int PC = 1;
+	table= create_table();
+	FILE *f1 = fopen(argv[1], "r");
+	FILE *f2 = fopen(argv[2], "w");
+	int PC = 0;
 	int label_c;
 	
 	if (f1 == NULL || f2 == NULL)
 	{
 		printf("Cant open the file\n");
+		free_table(table);
+		exit(1);
 	}
 	while (fgets(instruction, 500, f1) != NULL)
 	{
@@ -182,7 +184,7 @@ int main()
 		{
 			clean_label(instruction, label);
 			//printf("%s\n", label);
-			//insert_label(table, label, PC);
+			insert_label(table, label, PC);
 			
 			//sending to daniela's functions (label, PC+1)
 		}
@@ -243,8 +245,8 @@ int main()
 
 	fclose(f1);
 	fclose(f2);
-	//print_table();
-	//free_table();
+	print_table(table);
+	free_table(table);
 	return 0;
 }
 

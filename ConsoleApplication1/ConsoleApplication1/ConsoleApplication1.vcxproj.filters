@@ -24,9 +24,6 @@
     <ClCompile Include="new_hash_table.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="passone.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mainpaaone.c">
       <Filter>Source Files</Filter>
     </ClCompile>
