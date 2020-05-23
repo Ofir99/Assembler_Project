@@ -47,7 +47,7 @@ void handling_imm(char imm[], char new[])
 
 	}
 
-	if (imm[0] < 48 || imm[0]>57) // imm is a label
+	if ((imm[0] < 48 || imm[0]>57)&& imm[0]!= '-') // imm is a label
 	{
 		strcpy(new, imm);
 		return;
@@ -56,8 +56,18 @@ void handling_imm(char imm[], char new[])
 	// its a number
 
 	int a = atoi(imm);
+	
 	sprintf(new, "%03X", a);
-
+	if (imm[0] == '-')
+	{
+		int leni = strlen(new);
+		char temp[4] = { '0' };
+		temp[2] = new[leni-1];
+		temp[1] = new[leni - 2];
+		temp[0] = new[leni - 3];
+		temp[3] = '\0';
+		strcpy(new, temp);
+	}
 
 
 }
@@ -126,7 +136,7 @@ int extract_next(char ins[], char reg[], int counter)
 		counterf = counterf + 1;
 	}
 		
-	if (ins[counterf] =='\0' || ins[counterf]=='#')
+	if (ins[counterf] =='\0' || ins[counterf]=='#' || counterf==500|| ins[counterf]=='\n')
 	{
 		return -1;
 	}
@@ -155,7 +165,7 @@ int main()
 	int counter = 0;
 	int opcode = 0, regg1 = 0, regg2 = 0, regg3 = 0;
 	HashTable* table = NULL;
-	table= create_table();
+	//table= create_table();
 	FILE *f1 = fopen("C:\\Users\\Mor\\source\\repos\\danielashabat\\Assembler_Project\\test1.txt", "r");
 	FILE *f2 = fopen("C:\\Users\\Mor\\source\\repos\\danielashabat\\Assembler_Project\\write.txt", "w");
 	int PC = 1;
@@ -172,7 +182,7 @@ int main()
 		{
 			clean_label(instruction, label);
 			//printf("%s\n", label);
-			insert_label(table, label, PC);
+			//insert_label(table, label, PC);
 			
 			//sending to daniela's functions (label, PC+1)
 		}
@@ -233,8 +243,8 @@ int main()
 
 	fclose(f1);
 	fclose(f2);
-	print_table();
-	free_table();
+	//print_table();
+	//free_table();
 	return 0;
 }
 
