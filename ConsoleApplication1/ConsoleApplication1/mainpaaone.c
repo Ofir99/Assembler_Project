@@ -151,7 +151,7 @@ int extract_next(char ins[], char reg[], int counter)
 	return counterf;
 }
 
-
+//void main HashTable* passoneMain( int argc, char* argv[])
 HashTable* passoneMain( int argc, char* argv[])
 {
 	char instruction[500] = { 0 };

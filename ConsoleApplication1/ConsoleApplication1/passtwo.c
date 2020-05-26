@@ -3,9 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "common.h"
-#define firstStr 5
 
-void passTwoMain(int argc, char* argv[])
+void main(int argc, char* argv[])
 {
 	char firstString[5] = { 0 };
 	char immBefore[51] = { 0 }; //last spot for \0
@@ -13,7 +12,7 @@ void passTwoMain(int argc, char* argv[])
 	int adress = 0;
 	int count = 0;
 	HashTable* table = NULL;
-	table = passoneMain();
+	table = passoneMain(argc, argv);
 	//in args: test.txt write.txt memin.txt
 	FILE *f1 = fopen(argv[2], "r");
 	FILE *memin = fopen(argv[3], "w");
@@ -26,18 +25,19 @@ void passTwoMain(int argc, char* argv[])
 	}
 	while (!feof(f1))
 	{
-		fscanf(f1, firstString); //string untill space opcode-rd-rs-rt
+		fscanf(f1, "%s", firstString); //string untill space opcode-rd-rs-rt
 		//fscanf(f1, "%s",immBefore); //take original imm
 		//HOW TO PUT \0 IN THE RIGHT SPOT?
+		printf(firstString);
 		count = 0;
-		while ((cl = getc(f1)) != '\n') //get imm - as a string (\0)
+		while (((cl = getc(f1)) != '\n') && !feof(f1)) //get imm - as a string (\0)
 		{
 			if (cl != ' ') //if it continues after the fscanf including the space
 			{
 				immBefore[count] = cl;
 				count++;
 			}
-		}
+		
 		immBefore[count] = '\0';
 
 		fprintf(memin, "%s", firstString); //write to memin all the line but the imm
