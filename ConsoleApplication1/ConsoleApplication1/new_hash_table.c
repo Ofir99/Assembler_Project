@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "common.h"
 
@@ -7,7 +7,39 @@
 	exit(1);\
 }
 
-label* create_label(char* name,int adress) {
+
+
+int get_reg(char* str) {
+
+	char A[MAX_REG][MAX_LEN_REG] = { "$zero","$imm" ,"$v0","$a0" ,"$a1" ,"$t0" ,"$t1" ,"$t2" ,"$t3" ,"$s0" ,"$s1" ,"$s2" ,"$gp" ,"$sp" ,"$fp" ,"$ra" };
+	int i = 0;
+
+	for (i = 0; i < MAX_REG; i++) {
+		if (strcmp(str, A + i) == 0) {
+			return i;
+		}
+	}
+	printf("error:no register was found\n");
+	return -1;
+}
+
+
+int get_opcode(char* str) {
+
+	char A[MAX_OPCODE][MAX_LEN_OPCODE] = { "add","sub" ,"and","or" ,"sll" ,"sra" ,"srl" ,"beq" ,"bne" ,"blt" ,"bgt" ,"ble" ,"bge" ,"jal" ,"lw" ,"sw" ,"reti" ,"in" ,"out" ,"halt" };
+	int i = 0;
+
+	for (i = 0; i < MAX_OPCODE; i++) {
+		if (strcmp(str, A + i) == 0) {
+			return i;
+		}
+	}
+	printf("error:no opcode was found\n");
+	return -1;
+}
+
+
+static label* create_label(char* name,int adress) {
 	label* new_label = NULL;
 	new_label = (label*)malloc(sizeof(label));
 	if (new_label != NULL) {
@@ -131,6 +163,6 @@ int get_adress_from_label(HashTable* table, char* label_name) {
 		}
 		temp = temp->next;
 	}
-	printf("ERROR: LABEL NOT FOUND\n");
+	printf("ERROR: LABEL [%s] NOT FOUND\n", label_name);
 	return -1;
 }

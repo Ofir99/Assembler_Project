@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="get_reg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="get_opcode.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="new_hash_table.c">
       <Filter>Source Files</Filter>
     </ClCompile>

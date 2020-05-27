@@ -32,7 +32,7 @@ void main(int argc, char* argv[])
 	{
 		count_line++;
 		fscanf(f1, "%s %s\n", firstString, immBefore); //string untill space opcode-rd-rs-rt and imm
-		printf("%s %s\n", firstString, immBefore);
+		//printf("%s %s\n", firstString, immBefore);
 
 		//if label - returns code from table, else returns -1
 		adress = get_adress_from_label(table, immBefore);
