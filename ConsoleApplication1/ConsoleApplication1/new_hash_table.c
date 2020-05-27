@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "common.h"
@@ -8,7 +9,8 @@
 }
 
 
-
+//input: string contains the name of the register example: "$s1"
+//output: int that represent the Register Number
 int get_reg(char* str) {
 
 	char A[MAX_REG][MAX_LEN_REG] = { "$zero","$imm" ,"$v0","$a0" ,"$a1" ,"$t0" ,"$t1" ,"$t2" ,"$t3" ,"$s0" ,"$s1" ,"$s2" ,"$gp" ,"$sp" ,"$fp" ,"$ra" };
@@ -23,7 +25,8 @@ int get_reg(char* str) {
 	return -1;
 }
 
-
+//input: string contains the name of the opcode example: "add" **the name should be only in lower case
+//output: int that represent the Opcode Number
 int get_opcode(char* str) {
 
 	char A[MAX_OPCODE][MAX_LEN_OPCODE] = { "add","sub" ,"and","or" ,"sll" ,"sra" ,"srl" ,"beq" ,"bne" ,"blt" ,"bgt" ,"ble" ,"bge" ,"jal" ,"lw" ,"sw" ,"reti" ,"in" ,"out" ,"halt" };
@@ -39,6 +42,10 @@ int get_opcode(char* str) {
 }
 
 
+//creating new label using a dynamic allocation 
+//input arg1:  will be label's name
+//input arg2: the PC adress the label was found
+//output: pointer to the new label
 static label* create_label(char* name,int adress) {
 	label* new_label = NULL;
 	new_label = (label*)malloc(sizeof(label));
@@ -54,9 +61,9 @@ static label* create_label(char* name,int adress) {
 	return new_label;
 }
 
-
+// Creates a new HashTable and reseting the table to NULL
 HashTable* create_table() {// size need to be prime number
-	// Creates a new HashTable
+	
 	int i = 0;
 	
 	HashTable* table = (HashTable*)malloc(sizeof(HashTable));
@@ -72,7 +79,7 @@ HashTable* create_table() {// size need to be prime number
 
 	return table;
 }
-//this function can't used outside this file
+//this function free's label and it's linked list
 static void free_item(label* item) {
 	if (item == NULL) {
 		return;
@@ -81,13 +88,14 @@ static void free_item(label* item) {
 	free(item);
 
 }
-
+// Free's the table and all the pointers the table contains 
 void free_table(HashTable* table) {
-	// Frees the table
+	
 	for (int i = 0; i < table->size; i++) {
 		label* item = table->items[i];
-		if (item != NULL)
+		if (item != NULL) {
 			free_item(item);
+		}
 	}
 
 	free(table->items);
@@ -96,7 +104,7 @@ void free_table(HashTable* table) {
 
 
 //this function can't used outside this file
-/* this function gives a unique hash code to the given key */
+/* this function gives a unique hash code(int) to the given key(label's name) */
 static int  hashcode(char* label_name)
 {
 	int i = 0;
@@ -111,7 +119,8 @@ static int  hashcode(char* label_name)
 	return hash%SIZE ;
 }
 
-/* to insert a key in the hash table */
+//this function adding a new label to an exiting table by getting 3 argumets=(table, name's label , PC adress)
+//the function creating a new lable from type label , finding a uniqe hashcode to the label, and inserting the label to the hashtable.
 void insert_label(HashTable* table ,char* label_name,int  adress)
 {
 	label** adress__for_label = NULL;
@@ -136,7 +145,8 @@ void insert_label(HashTable* table ,char* label_name,int  adress)
 
 }
 
-
+//this function is for debuging
+//the function prints all the labels in the given table 
 void print_table(HashTable* table) {
 	label* temp = NULL;
 	int i = 0;
@@ -151,7 +161,8 @@ void print_table(HashTable* table) {
 	}
 }
 
-
+//this function is for passtwo
+//the function return the PC adress from an exiting table of a given label's name, if the label not in the table it returns (-1)
 int get_adress_from_label(HashTable* table, char* label_name) {
 	label* temp = NULL;
 	int hash = 0;
