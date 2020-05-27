@@ -163,6 +163,6 @@ int get_adress_from_label(HashTable* table, char* label_name) {
 		}
 		temp = temp->next;
 	}
-	printf("ERROR: LABEL [%s] NOT FOUND\n", label_name);
+	//printf("ERROR: LABEL [%s] NOT FOUND\n", label_name);
 	return -1;
 }
