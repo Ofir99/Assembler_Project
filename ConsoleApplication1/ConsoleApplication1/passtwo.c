@@ -5,7 +5,7 @@
 #include "common.h"
 #define MAX_LINE 4096 //starts from zero to max_line-1
 
-void main(int argc, char* argv[])
+ PassTwo(int argc, char* argv[])
 {
 	char firstString[6] = { 0 };
 	char immBefore[51] = { 0 }; //last spot for \0
