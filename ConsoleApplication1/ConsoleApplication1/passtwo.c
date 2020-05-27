@@ -3,14 +3,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include "common.h"
+#define MAX_LINE 4096 //starts from zero to max_line-1
 
 void main(int argc, char* argv[])
 {
 	char firstString[6] = { 0 };
 	char immBefore[51] = { 0 }; //last spot for \0
+	char Arr0[9] = { 0,0,0,0,0,0,0,0,0 };
+	//Arr0[8] = '\0';
 	char cl = '0';
 	int adress = 0;
 	int count = 0;
+	int count_line = 0;
 	HashTable* table = NULL;
 	table = passoneMain(argc, argv);
 	
@@ -26,8 +30,9 @@ void main(int argc, char* argv[])
 	}
 	while (!feof(f1))
 	{
-		fscanf(f1, "%s %s", firstString, immBefore); //string untill space opcode-rd-rs-rt and imm
-		//printf("%s %s\n", firstString, immBefore);
+		count_line++;
+		fscanf(f1, "%s %s\n", firstString, immBefore); //string untill space opcode-rd-rs-rt and imm
+		printf("%s %s\n", firstString, immBefore);
 
 		//if label - returns code from table, else returns -1
 		adress = get_adress_from_label(table, immBefore);
@@ -43,7 +48,11 @@ void main(int argc, char* argv[])
 			fprintf(memin, "%s%03X\n",firstString, adress);
 		}
 	}
-
+	while (count_line < MAX_LINE)
+	{
+		count_line++;
+		fprintf(memin, "%08s\n", Arr0);
+	}
 	fclose(f1);
 	fclose(memin);
 	free_table(table);
