@@ -2,29 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#define MAX_REG 16
-#define INSTRUCTION_LEN 10
-
-void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
-void Simulator(FILE* Memin);
-void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
-
+#include "simulator.h"
 
 
 int main(int argc, char* argv[]) {
 
 	FILE* Memin = NULL;
-	char line[INSTRUCTION_LEN];
-
 	Memin = fopen(argv[3], "r");
-	
 	Simulator(Memin);
 	fclose(Memin);
 	return 0;
-
 }
-
 
 
 //this function simulates a SIMP processor 
@@ -39,79 +27,74 @@ void Simulator(FILE* Memin) {
 	int PC = 0;
 	int PC_next = 0;
 
-	Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
 	
-	opcode = 13;
+	//while(true) loop until halt opcode  
+	PC = PC_next;
+	Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
+	//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
 
 	if (opcode >= 7 && opcode <= 13) {
 		Branch_Jump_opcode(R, opcode, rd, rs, rt, imm,PC, &PC_next);
 	}
-
-	//printf("%d", PC_next);
-
-
 }
 
+
+//this function move the pointer in file to PC address
+void Jump_to_PC(FILE* f, int PC) {
+	fseek(f, PC*10,SEEK_SET);//10 bytes in line 
+}
 
 
 //the function allocates data to variabales from the PC adress
 //input arg1: pointer to file , input arg2: number of line to read from(PC), input arg3,4,5,6,7:poniter to variabels
-void Extract_Variabales_from_PC(FILE* f,int  PC,int* opcode,int* reg_rd,int* reg_rs,int* reg_rt, int* imm) {
-	char instruction[INSTRUCTION_LEN] = { 0 };
-	int count_line = 0;
-	while (!feof(f)) {
-		if (count_line == PC) {
-			break;
-		}
-		fscanf(f, "%s\n", instruction);
-		count_line++;
-	}
-	fscanf(f, "%02X%01X%01X%01X%03X\n", opcode, reg_rd, reg_rs, reg_rt, imm);//extracting values 
+void Extract_Variabales_from_PC(FILE* f,int  PC,int* opcode,int* rd,int* rs,int* rt, int* imm) {
+	Jump_to_PC(f, PC);
+	fscanf(f, "%02X%01X%01X%01X%03X\n", opcode, rd, rs, rt, imm);//extracting values 
 	return;
 }
 
 void Branch_Jump_opcode(int R[],int opcode,int rd,int rs,int rt,int imm,int PC, int* PC_next) {
 	switch (opcode) {
 	
-	case 7:
+	case BEQ:
 		if (R[rs] == R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 8:
+	case BNE:
 		if (R[rs] != R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 9:
+	case BLT:
 		if (R[rs] < R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 10:
+	case BGT:
 		if (R[rs] > R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 11:
+	case BLE:
 		if (R[rs] <= R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 12:
+	case BGE:
 		if (R[rs] >= R[rt]) {
-			*PC_next = R[rd];//low bits
+			*PC_next = MASK_REG(R[rd]);
 		}
 		break;
 
-	case 13:
+	case JAL:
 		R[15] = PC + 1;
-		*PC_next = R[rd];//low bits
+		*PC_next = MASK_REG(R[rd]);
 		break;
 	}
 	
