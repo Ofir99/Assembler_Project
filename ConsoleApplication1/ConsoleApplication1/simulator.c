@@ -126,7 +126,7 @@ void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, in
 			break;
 		case SRL: //not keep sign
 		{
-			R[rd] = unsigned(R[rs]) >> R[rt];
+			R[rd] = (unsigned int)R[rs] >> R[rt];
 			break;
 		}
 		}
