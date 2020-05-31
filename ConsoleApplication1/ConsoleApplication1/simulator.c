@@ -57,9 +57,9 @@ void Extract_Variabales_from_PC(FILE* f,int  PC,int* opcode,int* rd,int* rs,int*
 	return;
 }
 
-void Branch_Jump_opcode(int R[],int opcode,int rd,int rs,int rt,int imm,int PC, int* PC_next) {
+void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next) {
 	switch (opcode) {
-	
+
 	case BEQ:
 		if (R[rs] == R[rt]) {
 			*PC_next = MASK_REG(R[rd]);
@@ -101,7 +101,7 @@ void Branch_Jump_opcode(int R[],int opcode,int rd,int rs,int rt,int imm,int PC, 
 		*PC_next = MASK_REG(R[rd]);
 		break;
 	}
-	
+}
 	void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt)//, int imm, int PC, int* PC_next)
 	{
 		switch (opcode)
@@ -131,5 +131,3 @@ void Branch_Jump_opcode(int R[],int opcode,int rd,int rs,int rt,int imm,int PC, 
 		}
 		}
 	}
-
-}
