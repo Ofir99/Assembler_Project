@@ -5,6 +5,13 @@
 #define INSTRUCTION_LEN 10
 #define MASK_REG(R) R&0xFFF//save only the 12 low bits 
 
+#define	ADD 0
+#define	SUB 1
+#define	AND 2
+#define	OR 3
+#define	SLL 4
+#define	SRA 5
+#define	SRL 6
 #define	BEQ 7
 #define BNE 8
 #define BLT 9
@@ -16,6 +23,7 @@
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
 void Simulator(FILE* Memin);
 void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
+void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt);
 void Jump_to_PC(FILE* f, int PC);
 
 

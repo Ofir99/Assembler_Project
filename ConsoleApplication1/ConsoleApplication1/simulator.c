@@ -32,7 +32,11 @@ void Simulator(FILE* Memin) {
 	PC = PC_next;
 	Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
 	//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
-
+	
+	if (opcode >= 0 && opcode <= 6) {
+		Instructions0to6_opcode(R, opcode, rd, rs, rt);
+		/*printf("%01d %01d %01d\n",M[rd],M[rs],M[rt]);*/
+	}
 	if (opcode >= 7 && opcode <= 13) {
 		Branch_Jump_opcode(R, opcode, rd, rs, rt, imm,PC, &PC_next);
 	}
@@ -98,7 +102,34 @@ void Branch_Jump_opcode(int R[],int opcode,int rd,int rs,int rt,int imm,int PC, 
 		break;
 	}
 	
-
-
+	void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt)//, int imm, int PC, int* PC_next)
+	{
+		switch (opcode)
+		{
+		case ADD:
+			R[rd] = R[rs] + R[rt];
+			break;
+		case SUB:
+			R[rd] = R[rs] - R[rt];
+			break;
+		case AND:
+			R[rd] = R[rs] & R[rt];
+			break;
+		case OR:
+			R[rd] = R[rs] | R[rt];
+			break;
+		case SLL:
+			R[rd] = R[rs] << R[rt];
+			break;
+		case SRA: //keep sign
+			R[rd] = R[rs] >> R[rt];
+			break;
+		case SRL: //not keep sign
+		{
+			R[rd] = unsigned(R[rs]) >> R[rt];
+			break;
+		}
+		}
+	}
 
 }
