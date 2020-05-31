@@ -102,7 +102,7 @@ void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, in
 		break;
 	}
 }
-	void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt)//, int imm, int PC, int* PC_next)
+	void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next)
 	{
 		switch (opcode)
 		{

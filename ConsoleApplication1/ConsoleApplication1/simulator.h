@@ -23,7 +23,7 @@
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
 void Simulator(FILE* Memin);
 void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
-void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt);
+void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
 void Jump_to_PC(FILE* f, int PC);
 
 
