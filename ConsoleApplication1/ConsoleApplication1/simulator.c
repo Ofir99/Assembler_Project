@@ -31,19 +31,27 @@ void Simulator(FILE* Memin) {
 	int PC = 0;
 	int PC_next = 0;
 	int IORegister[MAX_IOREG] = { 0 };
-	
-	//while(true) loop until halt opcode  
-	PC = PC_next;
-	PC_next = PC + 1; 
+	int countline = 0;
 
-	Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
-	//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
-	R[$imm] = imm;//update $imm register
-	if (opcode >= ADD&& opcode <= JAL) Instructions_0_to_13_opcode(R,opcode, rd,rs,rt, PC, &PC_next);
+	while (countline!=11) //loop until halt opcode  
+	{
+		countline++; //until we add halt to test
+		PC = PC_next;
+		PC_next = PC + 1;
 
-	//for(int i=0;i<MAX_REG;i++)
-	//printf("R[%d] =  %d \n",i, R[i]);
-	//printf("PC_next =  %d \n", PC_next);
+		Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
+		//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
+		R[$imm] = imm;//update $imm register
+		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
+
+		//for(int i=0;i<MAX_REG;i++)
+		//printf("R[%d] =  %d \n",i, R[i]);
+		//printf("PC_next =  %d \n", PC_next)
+		/*if (opcode == 19)
+		{
+			break;
+		}*/
+	}
 }
 
 
