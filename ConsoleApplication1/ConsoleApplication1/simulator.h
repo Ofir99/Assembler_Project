@@ -2,8 +2,12 @@
 #define SIMULATOR_H
 
 #define MAX_REG 16
+#define MAX_IOREG 18
 #define INSTRUCTION_LEN 10
 #define MASK_REG(R) R&0xFFF//save only the 12 low bits 
+#define SIGNED_IMM(IMM) ((IMM>>11)&1) ? (short) (IMM|0xF000) : IMM;
+
+#define $imm 1
 
 #define	ADD 0
 #define	SUB 1
@@ -22,8 +26,7 @@
 
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
 void Simulator(FILE* Memin);
-void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
-void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next);
+void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next);
 void Jump_to_PC(FILE* f, int PC);
 
 

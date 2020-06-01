@@ -6,10 +6,14 @@
 
 
 int main(int argc, char* argv[]) {
-
 	FILE* Memin = NULL;
-	Memin = fopen(argv[3], "r");
+	char a[3] = { 0 };
+	int hex = 0;
+	PassTwo(argc, argv);
+
+	Memin = fopen(argv[3], "r+");
 	Simulator(Memin);
+
 	fclose(Memin);
 	return 0;
 }
@@ -26,20 +30,20 @@ void Simulator(FILE* Memin) {
 	int imm = 0;
 	int PC = 0;
 	int PC_next = 0;
-
+	int IORegister[MAX_IOREG] = { 0 };
 	
 	//while(true) loop until halt opcode  
 	PC = PC_next;
+	PC_next = PC + 1; 
+
 	Extract_Variabales_from_PC(Memin, PC, &opcode, &rd, &rs, &rt, &imm);
 	//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
-	
-	if (opcode >= 0 && opcode <= 6) {
-		Instructions0to6_opcode(R, opcode, rd, rs, rt);
-		/*printf("%01d %01d %01d\n",M[rd],M[rs],M[rt]);*/
-	}
-	if (opcode >= 7 && opcode <= 13) {
-		Branch_Jump_opcode(R, opcode, rd, rs, rt, imm,PC, &PC_next);
-	}
+	R[$imm] = imm;//update $imm register
+	if (opcode >= ADD&& opcode <= JAL) Instructions_0_to_13_opcode(R,opcode, rd,rs,rt, PC, &PC_next);
+
+	//for(int i=0;i<MAX_REG;i++)
+	//printf("R[%d] =  %d \n",i, R[i]);
+	//printf("PC_next =  %d \n", PC_next);
 }
 
 
@@ -54,56 +58,11 @@ void Jump_to_PC(FILE* f, int PC) {
 void Extract_Variabales_from_PC(FILE* f,int  PC,int* opcode,int* rd,int* rs,int* rt, int* imm) {
 	Jump_to_PC(f, PC);
 	fscanf(f, "%02X%01X%01X%01X%03X\n", opcode, rd, rs, rt, imm);//extracting values 
+	*imm = SIGNED_IMM(*imm);//return signed 12 bit int
 	return;
 }
 
-void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next) {
-	switch (opcode) {
-
-	case BEQ:
-		if (R[rs] == R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case BNE:
-		if (R[rs] != R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case BLT:
-		if (R[rs] < R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case BGT:
-		if (R[rs] > R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case BLE:
-		if (R[rs] <= R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case BGE:
-		if (R[rs] >= R[rt]) {
-			*PC_next = MASK_REG(R[rd]);
-		}
-		break;
-
-	case JAL:
-		R[15] = PC + 1;
-		*PC_next = MASK_REG(R[rd]);
-		break;
-	}
-}
-	void Instructions0to6_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, int PC, int* PC_next)
-	{
+void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next){
 		switch (opcode)
 		{
 		case ADD:
@@ -125,9 +84,28 @@ void Branch_Jump_opcode(int R[], int opcode, int rd, int rs, int rt, int imm, in
 			R[rd] = R[rs] >> R[rt];
 			break;
 		case SRL: //not keep sign
-		{
 			R[rd] = (unsigned int)R[rs] >> R[rt];
 			break;
-		}
-		}
-	}
+		case BEQ:
+			if (R[rs] == R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case BNE:
+			if (R[rs] != R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case BLT:
+			if (R[rs] < R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case BGT:
+			if (R[rs] > R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case BLE:
+			if (R[rs] <= R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case BGE:
+			if (R[rs] >= R[rt]) *PC_next = MASK_REG(R[rd]);
+			break;
+		case JAL:
+			R[15] = PC + 1;
+			*PC_next = MASK_REG(R[rd]);
+			break;
+		}}
