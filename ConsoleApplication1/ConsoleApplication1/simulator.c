@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
 	FILE* Memin = NULL;
 	char a[3] = { 0 };
 	int hex = 0;
+
 	PassTwo(argc, argv);
 
 	Memin = fopen(argv[3], "r+");
@@ -43,10 +44,11 @@ void Simulator(FILE* Memin) {
 		//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
 		R[$imm] = imm;//update $imm register
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
+		if (opcode >= RETI && opcode <= OUT) IO_Instructions(opcode, R, IORegister, rd, rs, rt, &PC_next);
 
-		//for(int i=0;i<MAX_REG;i++)
-		//printf("R[%d] =  %d \n",i, R[i]);
-		//printf("PC_next =  %d \n", PC_next)
+		for(int i=0;i<MAX_REG;i++)
+		printf("R[%d] =  %d \n",i, R[i]);
+		printf("PC_next =  %d \n", PC_next);
 		/*if (opcode == 19)
 		{
 			break;
@@ -66,7 +68,7 @@ void Jump_to_PC(FILE* f, int PC) {
 void Extract_Variabales_from_PC(FILE* f,int  PC,int* opcode,int* rd,int* rs,int* rt, int* imm) {
 	Jump_to_PC(f, PC);
 	fscanf(f, "%02X%01X%01X%01X%03X\n", opcode, rd, rs, rt, imm);//extracting values 
-	*imm = SIGNED_IMM(*imm);//return signed 12 bit int
+	*imm = SIGNED_EXT_IMM(*imm);//return imm with sign extension to 32 bits
 	return;
 }
 
@@ -117,3 +119,16 @@ void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, in
 			*PC_next = MASK_REG(R[rd]);
 			break;
 		}}
+
+void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next) {
+	switch (opcode) {
+	case RETI: 
+		*PC_next = IORegister[7];
+		break;
+	case IN:
+		R[rd] = IORegister[R[rs] + R[rt]];
+		break;
+	case OUT:
+		IORegister[R[rs] + R[rt]] = R[rd];
+		break;}
+}
