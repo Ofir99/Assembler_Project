@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ConsoleApplication1\ConsoleApplication1\simulator.c">
+    <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ConsoleApplication1\ConsoleApplication1\simulator.h">
+    <ClInclude Include="assembler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,8 +12,10 @@ void zerostr(char str[]) //zero array
 		str[i] = 0;
 	}
 }
-
- void Pass(int argc, char* argv[])
+//input 1:f1 is the temporary file that created in PassOne
+//input 2: memin is an empty text file to write the processor memory
+//input 3: table with labels that filled in PassOne
+ void PassTwoMain(FILE* f1, FILE* memin,HashTable* table)
 {
 	char instruction[60] = { 0 };
 	char firstString[6] = { 0 };

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "common.h"
 
+
 int checking_label(char str[]) //  checking if its lable or not, returnning 1 if its a label, or 0 otherwise. 
 {
 	int i = 0;
@@ -203,8 +204,10 @@ void printingon_txt(FILE* f, char mem[4096][56])
 	}
 	
 }
-
-HashTable* passoneMain( FILE* f1, FILE* f2)
+//input 1: f1 is the test.asm file
+//input 2:pointer to Hashtable for all the labels
+//output: temporary file for PassTwo
+HashTable* PassOneMain( FILE* f1, HashTable* table)
 {
 	char instruction[500] = { 0 };
 	char instruction_new[56] = { 0 };
