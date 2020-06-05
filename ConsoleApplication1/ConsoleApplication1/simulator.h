@@ -23,7 +23,8 @@
 #define BLE 11
 #define BGE 12
 #define JAL 13
-
+#define LW 14
+#define SW 15
 #define RETI 16
 #define IN 17
 #define OUT 18
@@ -33,6 +34,7 @@ void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd
 void Simulator(FILE* Memin);
 void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next);
 void Jump_to_PC(FILE* f, int PC);
+void Instructions_lw_sw(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, FILE* Memin);
 void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next);
 
 

@@ -276,10 +276,6 @@ HashTable* passoneMain( int argc, char* argv[])
 			
 	}
 
-
-	
-	
-
 	printingon_txt(f2, mem);
 
 	fclose(f1);

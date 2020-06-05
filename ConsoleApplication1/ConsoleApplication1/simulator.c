@@ -44,6 +44,7 @@ void Simulator(FILE* Memin) {
 		//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
 		R[$imm] = imm;//update $imm register
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
+		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memin); //????
 		if (opcode >= RETI && opcode <= OUT) IO_Instructions(opcode, R, IORegister, rd, rs, rt, &PC_next);
 
 		for(int i=0;i<MAX_REG;i++)
@@ -118,8 +119,26 @@ void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, in
 			R[15] = PC + 1;
 			*PC_next = MASK_REG(R[rd]);
 			break;
+		
 		}}
 
+void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next, FILE* Memin)
+{
+	switch (opcode) {
+	case LW:
+	{
+		Jump_to_PC(Memin, R[rs] + R[rt]);
+		fscanf(Memin, "%s\n", R[rd]); //נופל כאן בריצה, אולי לעשות עם מערך...? את כל הקובץ
+		break;
+	}
+	case SW: //לבדוק גם את זה ופעולות נוספות שלא בדקנו
+	{
+		Jump_to_PC(Memin, R[rs] + R[rt]);
+		fprintf(Memin, "%s\n", R[rd]);
+		break;
+	}
+	}
+}
 void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next) {
 	switch (opcode) {
 	case RETI: 
