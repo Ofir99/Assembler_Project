@@ -20,7 +20,7 @@ L1:
 	sub $a0, $a0, $imm, 1		# calculate x - 1
 	jal $imm, $zero, $zero, fib	# calc $v0=fib(x-1)
 	add $s0, $v0, $imm, 0		# $s0 = fib(x-1)
-.word 12 0Xf	
+
 lw $a0, $sp, $imm, 0		# restore $a0 = x
 	sub $a0, $a0, $imm, 2		# calculate x - 2
 	jal $imm, $zero, $zero, fib	# calc fib(x-2)
@@ -42,6 +42,6 @@ L3:
 	out $t1, $zero, $imm, 9		# write the new led pattern
 	out $zero, $zero, $imm, 5	# clear irq2 status
 	reti $zero, $zero, $zero, 0	# return from interrupt
-	.word 1024 7
+	.word 1024 8
 
 	

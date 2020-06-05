@@ -34,9 +34,8 @@ void Simulator(FILE* Memin) {
 	int IORegister[MAX_IOREG] = { 0 };
 	int countline = 0;
 
-	while (countline!=11) //loop until halt opcode  
+	while (1) //loop until halt opcode  
 	{
-		countline++; //until we add halt to test
 		PC = PC_next;
 		PC_next = PC + 1;
 
@@ -46,15 +45,13 @@ void Simulator(FILE* Memin) {
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
 		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memin); //????
 		if (opcode >= RETI && opcode <= OUT) IO_Instructions(opcode, R, IORegister, rd, rs, rt, &PC_next);
+		if (opcode==HALT) break;//exit program
 
 		for(int i=0;i<MAX_REG;i++)
-		printf("R[%d] =  %d \n",i, R[i]);
+		printf("R[%d] =  %d,",i, R[i]);
 		printf("PC_next =  %d \n", PC_next);
-		/*if (opcode == 19)
-		{
-			break;
-		}*/
 	}
+	return 0;//need to do last print
 }
 
 
@@ -128,13 +125,13 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	case LW:
 	{
 		Jump_to_PC(Memin, R[rs] + R[rt]);
-		fscanf(Memin, "%s\n", R[rd]); //נופל כאן בריצה, אולי לעשות עם מערך...? את כל הקובץ
+		fscanf(Memin, "%X\n", &R[rd]); //נופל כאן בריצה, אולי לעשות עם מערך...? את כל הקובץ
 		break;
 	}
 	case SW: //לבדוק גם את זה ופעולות נוספות שלא בדקנו
 	{
 		Jump_to_PC(Memin, R[rs] + R[rt]);
-		fprintf(Memin, "%s\n", R[rd]);
+		fprintf(Memin, "%X\n", R[rd]);
 		break;
 	}
 	}

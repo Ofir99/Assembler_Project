@@ -28,6 +28,7 @@
 #define RETI 16
 #define IN 17
 #define OUT 18
+#define HALT 19
 
 
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);

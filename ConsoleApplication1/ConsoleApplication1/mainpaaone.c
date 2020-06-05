@@ -156,13 +156,14 @@ int extract_next(char ins[], char reg[], int counter)
 void restart_mem(char mem[4096][56])
 {
 	int i = 0;
-	for (i; i < 4097; i++) {
+	for (i; i < 4096; i++) {
 		for (int j = 0; j < 8; j++)
 		{
 			mem[i][j] = '0';
 		}
 		mem[i][8] = '\0';
 	}
+	
 }
 
 
@@ -196,14 +197,14 @@ void handling_word(char mem[4096][56], char reg1[], char reg2[])
 
 void printingon_txt(FILE* f, char mem[4096][56])
 {
-	for (int i = 0; i < 4097; i++)
+	for (int i = 0; i < 4096; i++)
 	{
 		fprintf(f, "%s\n", mem[i]);
 	}
 	
 }
 
-HashTable* passoneMain( int argc, char* argv[])
+HashTable* passoneMain( FILE* f1, FILE* f2)
 {
 	char instruction[500] = { 0 };
 	char instruction_new[56] = { 0 };
@@ -281,7 +282,7 @@ HashTable* passoneMain( int argc, char* argv[])
 	fclose(f1);
 	fclose(f2);
 	
-	//free_table(table);
+
 	return table;
 }
 

@@ -13,7 +13,7 @@ void zerostr(char str[]) //zero array
 	}
 }
 
- PassTwo(int argc, char* argv[])
+ void Pass(int argc, char* argv[])
 {
 	char instruction[60] = { 0 };
 	char firstString[6] = { 0 };
@@ -24,7 +24,7 @@ void zerostr(char str[]) //zero array
 	table = passoneMain(argc, argv);
 	
 	//in args: test1.txt write.txt memin.txt
-	FILE *f1 = fopen(argv[2], "r");
+	FILE *f1 = fopen(argv[2], "r");//write file
 	FILE *memin = fopen(argv[3], "w");
 
 	if (f1 == NULL || memin == NULL)
