@@ -151,18 +151,68 @@ int extract_next(char ins[], char reg[], int counter)
 	return counterf;
 }
 
+
+
+void restart_mem(char mem[4096][56])
+{
+	int i = 0;
+	for (i; i < 4097; i++) {
+		for (int j = 0; j < 8; j++)
+		{
+			mem[i][j] = '0';
+		}
+		mem[i][8] = '\0';
+	}
+}
+
+
+void handling_word(char mem[4096][56], char reg1[], char reg2[])
+{
+	//reg1 and re2 is a number
+	int m, d; 
+	char new[9] = { 0 };
+	if (reg1[1] == 'x' || reg1[1] == 'X')
+	{
+		m= (int)strtol(reg1, NULL, 0);
+	}
+	else
+	{
+		m = atoi(reg1);
+	}
+	if (reg2[1] == 'x' || reg2[1] == 'X')
+	{
+		d = (int)strtol(reg2, NULL, 0);
+	}
+	else
+	{
+		d = atoi(reg2);
+	}
+	sprintf(new, "%08X", d);
+	strcpy(mem[m], new);
+
+	
+}
 //void main HashTable* passoneMain( int argc, char* argv[])
+
+void printingon_txt(FILE* f, char mem[4096][56])
+{
+	for (int i = 0; i < 4097; i++)
+	{
+		fprintf(f, "%s\n", mem[i]);
+	}
+	
+}
+
 HashTable* passoneMain( int argc, char* argv[])
 {
 	char instruction[500] = { 0 };
-	char label[50] = { 0 };
-	char first[10] = { 0 };
-	char reg1[10] = { 0 };
-	char reg2[10] = { 0 };
-	char reg3[10] = { 0 };
+	char instruction_new[56] = { 0 };
+	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[10] = { 0 };
 	char imm[500] = { 0 };
-	char new_imm[10] = { 0 };
 	int counter = 0;
+	char mem[4096][56] = { 0 };
+	restart_mem(mem);
+	
 	int opcode = 0, regg1 = 0, regg2 = 0, regg3 = 0;
 	HashTable* table = NULL;
 	table= create_table();
@@ -177,46 +227,60 @@ HashTable* passoneMain( int argc, char* argv[])
 		free_table(table);
 		exit(1);
 	}
+
 	while (fgets(instruction, 500, f1) != NULL)
 	{
 		label_c = checking_label(instruction);
 		if (label_c != 0) //  its a label 
 		{
 			clean_label(instruction, label);
-			//printf("%s\n", label);
+			
 			insert_label(table, label, PC);
 			
-			//sending to daniela's functions (label, PC+1)
+			
 		}
 		
 		
 			counter = extract_next(instruction, first, label_c);
+			
 			if (counter != -1)
 			{
-				counter = extract_next(instruction, reg1, counter);
-				counter = extract_next(instruction, reg2, counter);
-				counter = extract_next(instruction, reg3, counter);
-				extract_next(instruction, imm, counter);
-
-				handling_imm(imm, new_imm);
-				opcode = get_opcode(first);
 				
+				 
+					counter = extract_next(instruction, reg1, counter);
+					counter = extract_next(instruction, reg2, counter);
+					if (first[0]=='.') // its .word
+					{
+						handling_word(mem, reg1, reg2);
+					}
+					else 
+					{
+						counter = extract_next(instruction, reg3, counter);
+						extract_next(instruction, imm, counter);
 
-				regg1 = get_reg(reg1);
-				regg2 = get_reg(reg2);
-				regg3 = get_reg(reg3);
-				fprintf(f2, "%02X", opcode);
-				fprintf(f2, "%X", regg1);
-				fprintf(f2, "%X", regg2);
-				fprintf(f2, "%X", regg3);
-				fprintf(f2, " %s\n", new_imm);
-				PC = PC + 1;
+						handling_imm(imm, new_imm);
+						opcode = get_opcode(first);
+
+
+						regg1 = get_reg(reg1);
+						regg2 = get_reg(reg2);
+						regg3 = get_reg(reg3);
+						sprintf(instruction_new, "%02X%X%X%X %s", opcode, regg1, regg2, regg3, new_imm);
+						
+						strcpy(mem[PC], instruction_new);
+						
+						PC = PC + 1;
+					}
+				
 			}
 			
 	}
 
 
 	
+	
+
+	printingon_txt(f2, mem);
 
 	fclose(f1);
 	fclose(f2);
