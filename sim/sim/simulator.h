@@ -32,12 +32,12 @@
 
 
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
-void Simulator(FILE* Memin);
+void Simulator(FILE* Memout);
 void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next);
 void Jump_to_PC(FILE* f, int PC);
-void Instructions_lw_sw(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, FILE* Memin);
+void Instructions_lw_sw(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, FILE* Memout);
 void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next);
 void Copy_Text_File(FILE* source, FILE* target);
 
 
-#endif 
+#endif #pragma once
