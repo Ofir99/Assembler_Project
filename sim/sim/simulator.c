@@ -4,33 +4,46 @@
 #include <stdlib.h>
 #include "simulator.h"
 
-
+//command line aplication:sim.exe memin.txt diskin.txt irq2in.txt memout.txt regout.txt trace.txt hwregtrace.txt cycles.txt leds.txt display.txt diskout.txt
 int main(int argc, char* argv[]) {
-	FILE* Memin = NULL;
-	FILE* Memout = NULL;
-	char a[3] = { 0 };
-	int hex = 0;
+	FILE* memin = NULL, *diskin = NULL, *irq2in = NULL, *memout = NULL, *regout = NULL, *trace = NULL, *hwregtrace = NULL, *cycles = NULL, *leds = NULL, *display = NULL, *diskout = NULL;
+	memin = fopen(argv[1], "r");
+	diskin = fopen(argv[2], "r");
+	irq2in = fopen(argv[3], "r");
+	memout = fopen(argv[4], "w+");
+	regout = fopen(argv[5], "w");
+	trace = fopen(argv[6], "w");
+	hwregtrace = fopen(argv[7], "w");
+	cycles = fopen(argv[8], "w");
+	leds = fopen(argv[9], "w");
+	display = fopen(argv[10], "w");
+	diskout = fopen(argv[11], "w");
 
-	Memin = fopen("memin.txt", "r");
-	if (Memin == NULL) return 1;
-	Memout = fopen("memout.txt", "w+");
-	if (Memout == NULL) {
-		fclose(Memin);
+	if ((memin==NULL) || (diskin==NULL) || (irq2in==NULL) || (memout==NULL) || (regout==NULL) || (trace==NULL) || (hwregtrace==NULL) || (cycles==NULL) || (leds==NULL) || (display==NULL) || (diskout == NULL)) {
+		printf("can't open one of the files\n");
 		return 1;
 	}
+	Copy_Text_File(memin,memout);
+	Simulator(memout);
 
-	Copy_Text_File(Memin, Memout);
-	Simulator(Memout);
-
-	fclose(Memin);
-	fclose(Memout);
+	fclose(memin);
+	fclose(diskin);
+	fclose(irq2in);
+	fclose(memout);
+	fclose(regout);
+	fclose(trace);
+	fclose(hwregtrace);
+	fclose(cycles);
+	fclose(leds);
+	fclose(display);
+	fclose(diskout);
 	return 0;
 }
 
 
 //this function simulates a SIMP processor 
 //input argument: file that created in assembler function
-void Simulator(FILE* Memout) {
+void Simulator(FILE* Memout) {//need to add the rest of the files
 	int R[MAX_REG] = { 0 };
 	int opcode = 0;
 	int	rd = 0;
@@ -46,19 +59,19 @@ void Simulator(FILE* Memout) {
 	{
 		PC = PC_next;
 		PC_next = PC + 1;
-		Clock_Cycle++;
-
+		
 		Extract_Variabales_from_PC(Memout, PC, &opcode, &rd, &rs, &rt, &imm);
-		//printf("%02X %01X %01X %01X %03X\n", opcode, rd, rs, rt, imm);
 		R[$imm] = imm;//update $imm register
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
-		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memout); //????
+		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memout); 
 		if (opcode >= RETI && opcode <= OUT) IO_Instructions(opcode, R, IORegister, rd, rs, rt, &PC_next);
 		if (opcode == HALT) break;//exit program
 
-		for (int i = 0; i < MAX_REG; i++)
-			printf("R[%d] =  %d,", i, R[i]);
-		printf("Clock_Cycle =  %d \n", Clock_Cycle);
+		//for (int i = 0; i < MAX_REG; i++)//for debug
+		//	printf("R[%d] =  %d,", i, R[i]);
+		//printf("Clock_Cycle =  %d \n", Clock_Cycle);
+
+		Clock_Cycle++;
 	}
 	return 0;//need to do last print
 }
