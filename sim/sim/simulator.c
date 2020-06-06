@@ -17,13 +17,14 @@ int main(int argc, char* argv[]) {
 	cycles = fopen(argv[8], "w");
 	leds = fopen(argv[9], "w");
 	display = fopen(argv[10], "w");
-	diskout = fopen(argv[11], "w");
+	diskout = fopen(argv[11], "w+");
 
 	if ((memin==NULL) || (diskin==NULL) || (irq2in==NULL) || (memout==NULL) || (regout==NULL) || (trace==NULL) || (hwregtrace==NULL) || (cycles==NULL) || (leds==NULL) || (display==NULL) || (diskout == NULL)) {
 		printf("can't open one of the files\n");
 		return 1;
 	}
 	Copy_Text_File(memin,memout);
+	Copy_Text_File(diskin, diskout);
 	Simulator(memout);
 
 	fclose(memin);
