@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 	}
 	Copy_Text_File(memin,memout);
 	Copy_Text_File(diskin, diskout);
+	adding_zeros_rows(diskout);
 	Simulator(memout);
 
 	fclose(memin);
