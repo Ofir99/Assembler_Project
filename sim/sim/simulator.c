@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	Copy_Text_File(memin,memout);
 	Copy_Text_File(diskin, diskout);
 	adding_zeros_rows(diskout);
-	Simulator(memout,trace); 
+	Simulator(memout,trace,leds); 
 
 	fclose(memin);
 	fclose(diskin);
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 
 //this function simulates a SIMP processor 
 //input argument: file that created in assembler function
-void Simulator(FILE* Memout,FILE *trace) {//need to add the rest of the files
+void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout) {//need to add the rest of the files
 	int R[MAX_REG] = { 0 };
 	int opcode = 0;
 	int	rd = 0;
@@ -63,12 +63,12 @@ void Simulator(FILE* Memout,FILE *trace) {//need to add the rest of the files
 		PC_next = PC + 1;
 		
 		Extract_Variabales_from_PC(Memout, PC, &opcode, &rd, &rs, &rt, &imm);
-		R[$imm] = imm;//update $imm register
+		R[$IMM] = imm;//update $imm register
 		print_trace(trace, PC, opcode, rd, rs, rt, imm, R);
 
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
 		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memout); 
-		if (opcode >= RETI && opcode <= OUT) IO_Instructions(opcode, R, IORegister, rd, rs, rt, &PC_next);
+		if (opcode >= RETI && opcode <= OUT) IO_Instructions( leds,diskout, Memout, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
 		if (opcode == HALT) break;//exit program
 
 		//for (int i = 0; i < MAX_REG; i++)//for debug
@@ -163,26 +163,35 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	}
 	}
 }
-void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next) {
+void IO_Instructions(FILE* leds, FILE* diskout,FILE* memout,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
+	int prev_leds = IORegister[LEDS];
 	switch (opcode) {
 	case RETI:
-		*PC_next = IORegister[7];
+		*PC_next = IORegister[IRQRETURN];
 		break;
 	case IN:
 		R[rd] = IORegister[R[rs] + R[rt]];
 		break;
 	case OUT:
 		IORegister[R[rs] + R[rt]] = R[rd];
+		if (IORegister[LEDS] != prev_leds) {//if leds register changed, write to leds file
+			print_leds(leds,clock_cycle, IORegister[LEDS]);
+		}
+		if ((IORegister[DISKSTATUS] ==0)&& IORegister[DISKCMD] != 0){//checking if disk is free and if its read/write command to disk
+		read_write_to_disk(diskout, memout, IORegister[DISKCMD], IORegister[DISKSECTOR], IORegister[DISKBUFFER]);
+		IORegister[DISKSTATUS] = 1;//disk is busy
+		}
+		
 		break;
 	}
 }
-
+//duplicate source file to target file
 void Copy_Text_File(FILE* source, FILE* target) {
 	char ch;
 	while ((ch = fgetc(source)) != EOF)
 		fputc(ch, target);
 }
-
+//printting to trace file each clock cycle
 void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int R[]) {
 
 	fprintf(trace, "%08X ", PC);
@@ -191,4 +200,8 @@ void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int 
 	for (int i = 0; i < MAX_REG; i++)//printing registers
 		fprintf(trace, "%08X ", R[i]);
 	fprintf(trace, "\n");
+}
+//printing to leds file evertime there is a change in register leds
+void print_leds(FILE *leds, int clock_cycle, int new_leds) {
+	fprintf(leds, "%d %08X\n", clock_cycle, new_leds);
 }

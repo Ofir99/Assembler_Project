@@ -7,7 +7,15 @@
 #define MASK_REG(R) R&0xFFF//save only the 12 low bits 
 #define SIGNED_EXT_IMM(IMM) ((IMM>>11)&1) ? (int) (IMM|0xFFFFF000) : IMM;
 
-#define $imm 1
+#define $IMM 1
+
+//IORegisters
+#define IRQRETURN 7
+#define LEDS 9
+#define DISKCMD 14
+#define DISKSECTOR 15
+#define DISKBUFFER 16
+#define DISKSTATUS 17
 
 #define	ADD 0
 #define	SUB 1
@@ -32,14 +40,15 @@
 
 
 void Extract_Variabales_from_PC(FILE* f, int  num_line, int* opcode, int* reg_rd, int* reg_rs, int* reg_rt, int* imm);
-void Simulator(FILE* Memout);
+void Simulator(FILE* Memout, FILE *trace, FILE *leds);
 void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next);
 void Jump_to_PC(FILE* f, int PC);
 void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next, FILE* Memout);
-void IO_Instructions(int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next);
+void IO_Instructions(FILE* leds, FILE* diskout, FILE* memout, int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle);
 void Copy_Text_File(FILE* source, FILE* target);
 void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector, int diskbuffer);
 void print_trace(FILE* trace, int PC, int opcode, int rd, int rs, int rt, int imm, int R[]);
+void print_leds(FILE *leds, int clock_cycle, int new_leds);
 
 
 #endif #pragma once
