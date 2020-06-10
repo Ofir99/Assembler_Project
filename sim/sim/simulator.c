@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	Copy_Text_File(memin,memout);
 	Copy_Text_File(diskin, diskout);
 	adding_zeros_rows(diskout);
-	Simulator(memout,trace,leds, diskout);
+	Simulator(memout, trace, leds, diskout, hwregtrace, regout, cycles, display);
 
 	fclose(memin);
 	fclose(diskin);
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 
 //this function simulates a SIMP processor 
 //input argument: file that created in assembler function
-void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout) {//need to add the rest of the files
+void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtrace, FILE *regout, FILE *cycles, FILE *display) {//need to add the rest of the files
 	int R[MAX_REG] = { 0 };
 	int opcode = 0;
 	int	rd = 0;
@@ -68,16 +68,14 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout) {//need to a
 
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
 		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memout); 
-		if (opcode >= RETI && opcode <= OUT) IO_Instructions( leds,diskout, Memout, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
+		if (opcode >= RETI && opcode <= OUT) IO_Instructions(hwregtrace,leds,diskout, Memout, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
 		if (opcode == HALT) break;//exit program
-
-		//for (int i = 0; i < MAX_REG; i++)//for debug
-		//	printf("R[%d] =  %d,", i, R[i]);
-		//printf("Clock_Cycle =  %d \n", Clock_Cycle);
 
 		Clock_Cycle++;
 	}
-	return 0;//need to do last print
+	fprintf(cycles, "%d\n", Clock_Cycle);//printing to cycles files the number of clock cycles
+	print_regout(regout, R);
+	return 0;
 }
 
 
@@ -163,17 +161,29 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	}
 	}
 }
-void IO_Instructions(FILE* leds, FILE* diskout,FILE* memout,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
+void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
 	int prev_leds = IORegister[LEDS];
+	char IOR_name[MAX_IOREG][13] = { "irq0enable"   ,"irq1enable"  ,"irq2enable"  ,\
+									 "irq0status"   ,"irq1status"  ,"irq2status"  ,\
+									 "irqhandler"   ,"irqreturn"   ,"clks"        ,\
+									 "leds"		    , "display"    ,"timerenable" ,\
+									 "timercurrent" ,"timermax"    ,"diskcmd"     ,\
+									 "disksector"   ,"diskbuffer"  ,"diskstatus" };
+
 	switch (opcode) {
 	case RETI:
 		*PC_next = IORegister[IRQRETURN];
 		break;
+
 	case IN:
 		R[rd] = IORegister[R[rs] + R[rt]];
+		fprintf(hwregtrace, "%d READ %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file reading to registers operation
 		break;
+
 	case OUT:
 		IORegister[R[rs] + R[rt]] = R[rd];
+		fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file writing to registers operation
+
 		if (IORegister[LEDS] != prev_leds) {//if leds register changed, write to leds file
 			print_leds(leds,clock_cycle, IORegister[LEDS]);
 		}
@@ -204,4 +214,11 @@ void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int 
 //printing to leds file evertime there is a change in register leds
 void print_leds(FILE *leds, int clock_cycle, int new_leds) {
 	fprintf(leds, "%d %08X\n", clock_cycle, new_leds);
+}
+
+void print_regout(FILE *regout,int R[]) {
+	int i = 2;//
+
+	for (i = 2; i < MAX_REG; i++) //printing R2-R15
+		fprintf(regout, "%08X\n", R[i]);
 }
