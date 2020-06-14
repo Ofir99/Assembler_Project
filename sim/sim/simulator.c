@@ -64,9 +64,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 
 	while (1) //loop until halt opcode  
 	{
-		routine_timer(IORegister);
-		routine_file(irq2in, IORegister, Clock_Cycle, &num);
-		routine_disk(IORegister, &timerdisk);
+		
 		if (PC_next == IORegister[IRQRETURN])
 			p = 0;
 		if (((IORegister[IRQ0ENABLE] && IORegister[IRQ0STATUS])|| (IORegister[IRQ1ENABLE] && IORegister[IRQ1STATUS]) || (IORegister[IRQ2ENABLE] && IORegister[IRQ2STATUS])) && p==0)
@@ -75,6 +73,9 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 			PC_next = IORegister[IRQHANDLER];
 			p = 1;
 		}
+		routine_file(irq2in, IORegister, Clock_Cycle, &num);
+		routine_timer(IORegister);
+		routine_disk(IORegister, &timerdisk);
 		
 		PC = PC_next;
 		PC_next = PC + 1;
@@ -137,7 +138,7 @@ void routine_disk(int IORegister[] ,int* timerdisk)
 	if (IORegister[DISKSTATUS] == 1)
 	{
 		*timerdisk++;
-		if (*timerdisk == 1023)
+		if (*timerdisk == 1023) //maybe 1024. have to check. 
 		{
 			IORegister[IRQ1STATUS] = 1;
 			IORegister[DISKCMD] = 0;
