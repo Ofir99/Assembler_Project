@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) {
 	adding_zeros_rows(diskout);
 	Simulator(memout, trace, leds, diskout, hwregtrace, regout, cycles, display, irq2in);
 
+
+
 	fclose(memin);
 	fclose(diskin);
 	fclose(irq2in);
@@ -90,7 +92,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 
 		Clock_Cycle++;
 	}
-	fprintf(cycles, "%d\n", Clock_Cycle);//printing to cycles files the number of clock cycles
+	fprintf(cycles, "%d\n", Clock_Cycle-1);//printing to cycles files the number of clock cycles
 	print_regout(regout, R);
 	return 0;
 }
