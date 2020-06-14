@@ -8,7 +8,6 @@
 //input 2: argv[]={program.exe,test.asm, memin.txt}
 int main(int argc,char* argv[]) {
 	HashTable* table = NULL;
-	FILE* temp_file = NULL;
 	FILE *test_file = fopen(argv[1], "r");
 	FILE* memin = fopen(argv[2], "w");
 
@@ -75,7 +74,7 @@ void PassOne(FILE* f1, HashTable* table)
 				PC = PC + 1;}}
 	}
 	printingon_txt(f2, mem);
-	fclose(f1);
+	fclose(f2);
 	return;
 }
 
