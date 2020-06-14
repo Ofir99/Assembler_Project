@@ -21,6 +21,16 @@
 #define DISKSECTOR 15
 #define DISKBUFFER 16
 #define DISKSTATUS 17
+#define IRQ0ENABLE 0
+#define IRQ1ENABLE 1
+#define IRQ2ENABLE 2
+#define IRQ0STATUS 3
+#define IRQ1STATUS 4
+#define IRQ2STATUS 5
+#define TIMERENABLE 11
+#define TIMERCURRENT 12
+#define TIMERMAX 13
+#define IRQHANDLER 6
 
 #define	ADD 0
 #define	SUB 1
@@ -55,6 +65,9 @@ void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector
 void print_trace(FILE* trace, int PC, int opcode, int rd, int rs, int rt, int imm, int R[]);
 void print_leds(FILE *leds, int clock_cycle, int new_leds);
 void print_regout(FILE *regout, int R[]);
+void routine_timer(int IORregister[]);
+void routine_file(FILE *irq, int IORregister[], int clock);
+void routine_disk(int IORegister[], int* timerdisk);
 
 
 #endif #pragma once

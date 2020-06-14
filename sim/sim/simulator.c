@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	Copy_Text_File(memin,memout);
 	Copy_Text_File(diskin, diskout);
 	adding_zeros_rows(diskout);
-	Simulator(memout, trace, leds, diskout, hwregtrace, regout, cycles, display);
+	Simulator(memout, trace, leds, diskout, hwregtrace, regout, cycles, display, irq2in);
 
 	fclose(memin);
 	fclose(diskin);
@@ -45,20 +45,37 @@ int main(int argc, char* argv[]) {
 
 //this function simulates a SIMP processor 
 //input argument: file that created in assembler function
-void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtrace, FILE *regout, FILE *cycles, FILE *display) {//need to add the rest of the files
+void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtrace, FILE *regout, FILE *cycles, FILE *display, FILE *irq2in) {//need to add the rest of the files
 	int R[MAX_REG] = { 0 };
 	int opcode = 0;
 	int	rd = 0;
 	int rs = 0;
+	int num = 0;
 	int rt = 0;
 	int imm = 0;
 	int PC = 0;
 	int PC_next = 0;
+	int p = 0; // p=1 if we handling psika 
 	int IORegister[MAX_IOREG] = { 0 };
 	int Clock_Cycle = 0;
+	int timerdisk = 0;
+
+	
 
 	while (1) //loop until halt opcode  
 	{
+		routine_timer(IORegister);
+		routine_file(irq2in, IORegister, Clock_Cycle, &num);
+		routine_disk(IORegister, &timerdisk);
+		if (PC_next == IORegister[IRQRETURN])
+			p = 0;
+		if (((IORegister[IRQ0ENABLE] && IORegister[IRQ0STATUS])|| (IORegister[IRQ1ENABLE] && IORegister[IRQ1STATUS]) || (IORegister[IRQ2ENABLE] && IORegister[IRQ2STATUS])) && p==0)
+		{
+			IORegister[IRQRETURN] = PC_next;
+			PC_next = IORegister[IRQHANDLER];
+			p = 1;
+		}
+		
 		PC = PC_next;
 		PC_next = PC + 1;
 		
@@ -76,6 +93,58 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	fprintf(cycles, "%d\n", Clock_Cycle);//printing to cycles files the number of clock cycles
 	print_regout(regout, R);
 	return 0;
+}
+
+void routine_timer(int IORregister[])
+{
+	
+	if (IORregister[TIMERENABLE]==1)
+	{
+		if (IORregister[TIMERCURRENT] == IORregister[TIMERMAX])
+		{
+			IORregister[IRQ0STATUS] = 1;
+			IORregister[TIMERCURRENT] = 0;
+		}
+		else IORregister[TIMERCURRENT] = IORregister[TIMERCURRENT] + 1;
+	}
+	
+}
+
+void routine_file(FILE *irq, int IORregister[], int clock, int* num)
+{
+	//int num=0;
+	int endfile = 0; // 1 for end of file
+	if (clock == 0) 
+	{
+		if (fscanf(irq, "%d", num) == -1)
+		{
+			endfile = 1;
+		}
+	}
+	if (clock == *num && endfile==0)
+	{
+		IORregister[IRQ2STATUS] = 1;
+		if (fscanf(irq, "%d", num) == -1)
+		{
+			endfile = 1;
+		}
+	}
+	
+}
+
+void routine_disk(int IORegister[] ,int* timerdisk)
+{
+	if (IORegister[DISKSTATUS] == 1)
+	{
+		*timerdisk++;
+		if (*timerdisk == 1023)
+		{
+			IORegister[IRQ1STATUS] = 1;
+			IORegister[DISKCMD] = 0;
+			IORegister[DISKSTATUS] = 0;
+			*timerdisk = 0;
+		}
+	}
 }
 
 
@@ -156,7 +225,7 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	case SW: //לבדוק גם את זה ופעולות נוספות שלא בדקנו
 	{
 		Jump_to_PC(Memout, R[rs] + R[rt]);
-		fprintf(Memout, "%X\n", R[rd]);
+		fprintf(Memout, "%08X\n", R[rd]);
 		break;
 	}
 	}
