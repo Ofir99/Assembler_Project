@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
 
 
 //this function simulates a SIMP processor 
-//input argument: file that created in assembler function
-void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtrace, FILE *regout, FILE *cycles, FILE *display, FILE *irq2in) {//need to add the rest of the files
+//input argument 1: file that created in assembler function
+void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtrace, FILE *regout, FILE *cycles, FILE *display, FILE *irq2in) {
 	int R[MAX_REG] = { 0 };
 	int opcode = 0;
 	int	rd = 0;
@@ -88,12 +88,12 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 
 		if (opcode >= ADD && opcode <= JAL) Instructions_0_to_13_opcode(R, opcode, rd, rs, rt, PC, &PC_next);
 		if (opcode >= LW && opcode <= SW) Instructions_lw_sw(R, opcode, rd, rs, rt, PC, &PC_next, Memout); 
-		if (opcode >= RETI && opcode <= OUT) IO_Instructions(hwregtrace,leds,diskout, Memout, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
+		if (opcode >= RETI && opcode <= OUT) IO_Instructions(hwregtrace,leds,diskout, Memout,display, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
 		if (opcode == HALT) break;//exit program
 
 		Clock_Cycle++;
 	}
-	fprintf(cycles, "%d\n", Clock_Cycle-1);//printing to cycles files the number of clock cycles
+	fprintf(cycles, "%d\n", Clock_Cycle+1);//printing to cycles files the number of clock cycles
 	print_regout(regout, R);
 	return 0;
 }
@@ -222,10 +222,10 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	case LW:
 	{
 		Jump_to_PC(Memout, R[rs] + R[rt]);
-		fscanf(Memout, "%X\n", &R[rd]); //נופל כאן בריצה, אולי לעשות עם מערך...? את כל הקובץ
+		fscanf(Memout, "%X\n", &R[rd]); 
 		break;
 	}
-	case SW: //לבדוק גם את זה ופעולות נוספות שלא בדקנו
+	case SW: 
 	{
 		Jump_to_PC(Memout, R[rs] + R[rt]);
 		fprintf(Memout, "%08X\n", R[rd]);
@@ -233,15 +233,15 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	}
 	}
 }
-void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
+void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FILE* display,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
 	int prev_leds = IORegister[LEDS];
+	int prev_display = IORegister[DISPLAY];
 	char IOR_name[MAX_IOREG][13] = { "irq0enable"   ,"irq1enable"  ,"irq2enable"  ,\
 									 "irq0status"   ,"irq1status"  ,"irq2status"  ,\
 									 "irqhandler"   ,"irqreturn"   ,"clks"        ,\
 									 "leds"		    , "display"    ,"timerenable" ,\
 									 "timercurrent" ,"timermax"    ,"diskcmd"     ,\
 									 "disksector"   ,"diskbuffer"  ,"diskstatus" };
-
 	switch (opcode) {
 	case RETI:
 		*PC_next = IORegister[IRQRETURN];
@@ -256,23 +256,20 @@ void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,int
 		IORegister[R[rs] + R[rt]] = R[rd];
 		fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file writing to registers operation
 
-		if (IORegister[LEDS] != prev_leds) {//if leds register changed, write to leds file
-			print_leds(leds,clock_cycle, IORegister[LEDS]);
-		}
+		if (IORegister[LEDS] != prev_leds) //if leds register changed, write to leds file
+			fprintf(leds, "%d %08X\n", clock_cycle, IORegister[LEDS]);
+
+		if (IORegister[DISPLAY] != prev_display) //if display register changed, write to display file
+			fprintf(display, "%d %08X\n", clock_cycle, IORegister[DISPLAY]);
+		
 		if ((IORegister[DISKSTATUS] ==0)&& IORegister[DISKCMD] != 0){//checking if disk is free and if its read/write command to disk
 		read_write_to_disk(diskout, memout, IORegister[DISKCMD], IORegister[DISKSECTOR], IORegister[DISKBUFFER]);
 		IORegister[DISKSTATUS] = 1;//disk is busy
 		}
-		
 		break;
 	}
 }
-//duplicate source file to target file
-void Copy_Text_File(FILE* source, FILE* target) {
-	char ch;
-	while ((ch = fgetc(source)) != EOF)
-		fputc(ch, target);
-}
+
 //printting to trace file each clock cycle
 void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int R[]) {
 
@@ -283,14 +280,52 @@ void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int 
 		fprintf(trace, "%08X ", R[i]);
 	fprintf(trace, "\n");
 }
-//printing to leds file evertime there is a change in register leds
-void print_leds(FILE *leds, int clock_cycle, int new_leds) {
-	fprintf(leds, "%d %08X\n", clock_cycle, new_leds);
-}
 
-void print_regout(FILE *regout,int R[]) {
+void print_regout(FILE *regout,int R[]) {//printing R2-R15
 	int i = 2;//
 
-	for (i = 2; i < MAX_REG; i++) //printing R2-R15
+	for (i = 2; i < MAX_REG; i++) 
 		fprintf(regout, "%08X\n", R[i]);
+}
+
+void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector, int diskbuffer) {
+	int count = 0;
+	char line[9] = { 0 };
+
+	Jump_to_PC(diskout, disksector * 128);//jump to disksector in disk
+	Jump_to_PC(memout, diskbuffer);//jump to diskbuffer in memory
+
+	if (diskcmd == 1) {//read sector
+		while (count < 128) {
+			fscanf(diskout, "%s\n", line);
+			fprintf(memout, "%s\n", line);
+			count++;}
+	}
+	else//write sector
+	{
+		while (count < 128) {
+			fscanf(memout, "%s\n", line);
+			fprintf(diskout, "%s\n", line);
+			count++;}
+	}
+}
+
+//adding zero rows to file until there is (128*128) rows in file
+void adding_zeros_rows(FILE* f) {
+	int count_line = 0;
+	char line[9] = { 0 };
+	while (!feof) {
+		fscanf(f, "%s\n", line);
+		count_line++;
+	}
+	while (count_line < (128 * 128)) {
+		fprintf(f, "00000000\n");
+		count_line++;
+	}
+}
+//duplicate source file to target file
+void Copy_Text_File(FILE* source, FILE* target) {
+	char ch;
+	while ((ch = fgetc(source)) != EOF)
+		fputc(ch, target);
 }
