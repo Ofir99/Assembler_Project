@@ -28,7 +28,7 @@ void PassOne(FILE* f1, HashTable* table)
 {
 	char instruction[500] = { 0 };
 	char instruction_new[56] = { 0 };
-	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[10] = { 0 };
+	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[0] = { 0 };
 	char imm[500] = { 0 };
 	int counter = 0;
 	char mem[4096][56] = { 0 };
@@ -401,14 +401,11 @@ void free_table(HashTable* table) {
 static int  hashcode(char* label_name)
 {
 	int i = 0;
-	int hash = 0;
+	unsigned int hash = 0;
 	for (i = 0; *(label_name + i) != '\0'; i++)
 	{
 		hash = hash * 7 + label_name[i];
 	}
-
-
-
 	return hash % SIZE;
 }
 
@@ -416,22 +413,22 @@ static int  hashcode(char* label_name)
 //the function creating a new lable from type label , finding a uniqe hashcode to the label, and inserting the label to the hashtable.
 void insert_label(HashTable* table, char* label_name, int  adress)
 {
-	label** adress__for_label = NULL;
+	label* exist_label = NULL;
 	label* new_label = NULL;
 	int hash = 0;
 	hash = hashcode(label_name);
 	new_label = create_label(label_name, adress);
 
-	adress__for_label = (table->items + hash);
-	if (*(adress__for_label) == NULL) {
-		*(adress__for_label) = new_label;
+	if (table->items[hash] == NULL) {//if the cell is empty
+		table->items[hash] = new_label;
 		return;
 	}
+	exist_label = table->items[hash];//case of collision
 
-	while ((*adress__for_label)->next != NULL) {
-		adress__for_label = (*adress__for_label)->next;
+	while (exist_label->next != NULL) {
+		exist_label = exist_label->next;
 	}
-	(*adress__for_label)->next = new_label;
+	exist_label->next = new_label;
 	return;
 
 
