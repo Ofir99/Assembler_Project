@@ -28,7 +28,7 @@ void PassOne(FILE* f1, HashTable* table)
 {
 	char instruction[500] = { 0 };
 	char instruction_new[56] = { 0 };
-	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[0] = { 0 };
+	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[50] = { 0 };
 	char imm[500] = { 0 };
 	int counter = 0;
 	char mem[4096][56] = { 0 };

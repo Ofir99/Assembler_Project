@@ -139,7 +139,7 @@ void routine_disk(int IORegister[] ,int* timerdisk)
 {
 	if (IORegister[DISKSTATUS] == 1)
 	{
-		*timerdisk++;
+		*timerdisk= *timerdisk +1;
 		if (*timerdisk == 1023) //maybe 1024. have to check. 
 		{
 			IORegister[IRQ1STATUS] = 1;
@@ -262,7 +262,7 @@ void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FIL
 		if (IORegister[DISPLAY] != prev_display) //if display register changed, write to display file
 			fprintf(display, "%d %08X\n", clock_cycle, IORegister[DISPLAY]);
 		
-		if ((IORegister[DISKSTATUS] ==0)&& IORegister[DISKCMD] != 0){//checking if disk is free and if its read/write command to disk
+		if ((IORegister[DISKSTATUS] ==0)&& (IORegister[DISKCMD] != 0)){//checking if disk is free and if its read/write command to disk
 		read_write_to_disk(diskout, memout, IORegister[DISKCMD], IORegister[DISKSECTOR], IORegister[DISKBUFFER]);
 		IORegister[DISKSTATUS] = 1;//disk is busy
 		}
@@ -314,7 +314,8 @@ void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector
 void adding_zeros_rows(FILE* f) {
 	int count_line = 0;
 	char line[9] = { 0 };
-	while (!feof) {
+	fseek(f, 0, SEEK_SET);
+	while (!feof(f)) {
 		fscanf(f, "%s\n", line);
 		count_line++;
 	}
@@ -325,7 +326,9 @@ void adding_zeros_rows(FILE* f) {
 }
 //duplicate source file to target file
 void Copy_Text_File(FILE* source, FILE* target) {
-	char ch;
-	while ((ch = fgetc(source)) != EOF)
-		fputc(ch, target);
+	char line[9] = { 0 };
+	while (!feof(source)) {
+		fscanf(source, "%s\n", line);
+		fprintf(target, "%s\n", line);
+	}
 }
