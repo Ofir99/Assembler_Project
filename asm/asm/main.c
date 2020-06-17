@@ -9,7 +9,7 @@
 int main(int argc,char* argv[]) {
 	HashTable* table = NULL;
 	FILE *test_file = fopen(argv[1], "r");
-	FILE* memin = fopen(argv[2], "w");
+	FILE *memin = fopen("C:\\Users\\Mor\\source\\repos\\danielashabat\\Assembler_Project\\asm\\asm\\memin.txt", "w");
 
 	table = create_table();
 	PassOne(test_file, table);
@@ -89,7 +89,7 @@ void zerostr(char str[]) //zero array
 
 //input 1: memin is an empty text file to write the processor memory
 //input 2: table with labels that filled in PassOne
-void PassTwo( FILE* memin, HashTable* table)
+void PassTwo(FILE* memin, HashTable* table)
 {
 	char instruction[60] = { 0 };
 	char firstString[6] = { 0 };
