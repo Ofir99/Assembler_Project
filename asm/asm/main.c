@@ -204,7 +204,7 @@ int extract_next(char ins[], char reg[], int counter)
 	{
 		return -1;
 	}
-	while (ins[counterf] != ' ' && ins[counterf] != ',' && ins[counterf] != '#' && ins[counterf] != '	')
+	while (ins[counterf] != ' ' && ins[counterf] != ',' && ins[counterf] != '#' && ins[counterf] != '	' && ins[counterf] != '\n')
 	{
 		reg[j] = ins[counterf];
 		j = j + 1;
