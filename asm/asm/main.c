@@ -9,7 +9,7 @@
 int main(int argc,char* argv[]) {
 	HashTable* table = NULL;
 	FILE *test_file = fopen(argv[1], "r");
-	FILE *memin = fopen("memin.txt", "w");
+	FILE *memin = fopen(argv[2], "w");
 
 	table = create_table();
 	PassOne(test_file, table);
