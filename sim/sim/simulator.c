@@ -79,6 +79,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 		routine_timer(IORegister);
 		routine_disk(IORegister, &timerdisk);
 		
+		IORegister[CLKS] = Clock_Cycle;
 		PC = PC_next;
 		PC_next = PC + 1;
 		
