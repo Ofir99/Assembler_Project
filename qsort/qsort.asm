@@ -72,4 +72,4 @@ beq $imm, $zero, $zero, Loop #more iteration
 .word 1036 3000
 .word 1037 55
 .word 1038 2500
-.word 1039 -100
+.word 1039 77
