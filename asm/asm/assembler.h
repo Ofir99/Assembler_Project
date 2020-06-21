@@ -17,6 +17,7 @@
 	exit(1);\
 }
 
+
 // this struct represent label
 // the labels are given from the tests programs
 

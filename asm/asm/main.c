@@ -28,7 +28,7 @@ void PassOne(FILE* f1, HashTable* table)
 {
 	char instruction[500] = { 0 };
 	char instruction_new[56] = { 0 };
-	char label[50] = { 0 }, first[10] = { 0 }, reg1[10] = { 0 }, reg2[10] = { 0 }, reg3[10] = { 0 }, new_imm[50] = { 0 };
+	char label[50] = { 0 }, first[10] = { 0 }, reg1[12] = { 0 }, reg2[12] = { 0 }, reg3[10] = { 0 }, new_imm[50] = { 0 };
 	char imm[500] = { 0 };
 	int counter = 0;
 	char mem[4096][56] = { 0 };
@@ -157,8 +157,10 @@ void printingon_txt(FILE* f, char mem[4096][56])
 void handling_word(char mem[4096][56], char reg1[], char reg2[])
 {
 	//reg1 and re2 is a number
-	int m, d;
+	int m, d, i=2, j=0;
+	char per[9] = { 0 };
 	char new[9] = { 0 };
+	
 	if (reg1[1] == 'x' || reg1[1] == 'X')
 	{
 		m = (int)strtol(reg1, NULL, 0);
@@ -167,17 +169,37 @@ void handling_word(char mem[4096][56], char reg1[], char reg2[])
 	{
 		m = atoi(reg1);
 	}
-	if (reg2[1] == 'x' || reg2[1] == 'X')
+	if ((reg2[1] == 'x' || reg2[1] == 'X') && strlen(reg2)==10)
+	{
+
+		
+		while (reg2[i]!='\0')
+		{
+			per[j] = reg2[i];
+			i++;
+			j++;
+
+		}
+		per[j] = '\0';
+		strcpy(new, per);
+
+	}
+	else if ((reg2[1] == 'x' || reg2[1] == 'X') && strlen(reg2) != 10)
 	{
 		d = (int)strtol(reg2, NULL, 0);
+		sprintf(new, "%08X", d);
 	}
 	else
 	{
 		d = atoi(reg2);
+		sprintf(new, "%08X", d);
+		
 	}
-	sprintf(new, "%08X", d);
+	
 	strcpy(mem[m], new);
 }
+
+
 
 void restart_mem(char mem[4096][56])
 {
@@ -204,7 +226,7 @@ int extract_next(char ins[], char reg[], int counter)
 	{
 		return -1;
 	}
-	while (ins[counterf] != ' ' && ins[counterf] != ',' && ins[counterf] != '#' && ins[counterf] != '	' && ins[counterf] != '\n')
+	while (ins[counterf] != ' ' && ins[counterf] != ',' && ins[counterf] != '#' && ins[counterf] != '	' && ins[counterf] != '\n' && ins[counterf] != '\0')
 	{
 		reg[j] = ins[counterf];
 		j = j + 1;
