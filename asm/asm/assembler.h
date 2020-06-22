@@ -1,14 +1,14 @@
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
 
-#define SIZE 517
+#define HASHTABLE_SIZE 517
 #define MAX_lEN_NAME 500
 
-#define MAX_OPCODE 20
-#define MAX_LEN_OPCODE 5
+#define OPCODE_SIZE 20
+#define STR_OPCODE_LEN 5
 
-#define MAX_REG 16
-#define MAX_LEN_REG 6
+#define REG_SIZE 16
+#define STR_REG_LEN 6
 
 #define MAX_LINE 4096 //starts from zero to max_line-1
 

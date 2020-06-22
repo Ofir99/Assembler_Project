@@ -6,6 +6,7 @@
 
 //input1: amount of input files
 //input 2: argv[]={program.exe,test.asm, memin.txt}
+//output: creating "memin.txt", the file represent the main memory following test.asm, each line's number is the pc adress of the memory and the data in it.
 int main(int argc,char* argv[]) {
 	HashTable* table = NULL;
 	FILE *test_file = fopen(argv[1], "r");
@@ -22,8 +23,8 @@ int main(int argc,char* argv[]) {
 
 
 //input 1: f1 is the test.asm file
-//input 2:pointer to Hashtable for all the labels
-//output: temporary file for PassTwo
+//input 2:pointer to an empty Hashtable
+//output: creating a temporary file for PassTwo
 void PassOne(FILE* f1, HashTable* table)
 {
 	char instruction[500] = { 0 };
@@ -86,9 +87,9 @@ void zerostr(char str[]) //zero array
 		str[i] = 0;
 	}
 }
-
-//input 1: memin is an empty text file to write the processor memory
-//input 2: table with labels that filled in PassOne
+//this function reading from the temporary file that created in PassOne and writing to a new file(memin) the same content, but only changing the label's name with their PC address
+//input 1: memin is an empty text file for writing 
+//input 2:pointer to table with labels that filled in PassOne
 void PassTwo(FILE* memin, HashTable* table)
 {
 	char instruction[60] = { 0 };
@@ -328,10 +329,10 @@ void clean_label(char ins[], char label[])
 //output: int that represent the Register Number
 int get_reg(char* str) {
 
-	char A[MAX_REG][MAX_LEN_REG] = { "$zero","$imm" ,"$v0","$a0" ,"$a1" ,"$t0" ,"$t1" ,"$t2" ,"$t3" ,"$s0" ,"$s1" ,"$s2" ,"$gp" ,"$sp" ,"$fp" ,"$ra" };
+	char A[REG_SIZE][STR_REG_LEN] = { "$zero","$imm" ,"$v0","$a0" ,"$a1" ,"$t0" ,"$t1" ,"$t2" ,"$t3" ,"$s0" ,"$s1" ,"$s2" ,"$gp" ,"$sp" ,"$fp" ,"$ra" };
 	int i = 0;
 
-	for (i = 0; i < MAX_REG; i++) {
+	for (i = 0; i < REG_SIZE; i++) {
 		if (strcmp(str, A + i) == 0) {
 			return i;
 		}
@@ -344,10 +345,10 @@ int get_reg(char* str) {
 //output: int that represent the Opcode Number
 int get_opcode(char* str) {
 
-	char A[MAX_OPCODE][MAX_LEN_OPCODE] = { "add","sub" ,"and","or" ,"sll" ,"sra" ,"srl" ,"beq" ,"bne" ,"blt" ,"bgt" ,"ble" ,"bge" ,"jal" ,"lw" ,"sw" ,"reti" ,"in" ,"out" ,"halt" };
+	char A[OPCODE_SIZE][STR_OPCODE_LEN] = { "add","sub" ,"and","or" ,"sll" ,"sra" ,"srl" ,"beq" ,"bne" ,"blt" ,"bgt" ,"ble" ,"bge" ,"jal" ,"lw" ,"sw" ,"reti" ,"in" ,"out" ,"halt" };
 	int i = 0;
 
-	for (i = 0; i < MAX_OPCODE; i++) {
+	for (i = 0; i < OPCODE_SIZE; i++) {
 		if (strcmp(str, A + i) == 0) {
 			return i;
 		}
@@ -358,9 +359,9 @@ int get_opcode(char* str) {
 
 
 //creating new label using a dynamic allocation 
-//input arg1:  will be label's name
+//input arg1: label's name
 //input arg2: the PC adress the label was found
-//output: pointer to the new label
+//output: pointer to the new label from type 'label'
 static label* create_label(char* name, int adress) {
 	label* new_label = NULL;
 	new_label = (label*)malloc(sizeof(label));
@@ -377,17 +378,18 @@ static label* create_label(char* name, int adress) {
 }
 
 // Creates a new HashTable and reseting the table to NULL
-HashTable* create_table() {// size need to be prime number
+//output: pointer to a new and empty Hashtable
+HashTable* create_table() {// size should be prime number
 
 	int i = 0;
 
 	HashTable* table = (HashTable*)malloc(sizeof(HashTable));
 	NULL_ERROR(table)
 
-		table->size = SIZE;
-	table->items = (label**)malloc(SIZE * sizeof(label*));
+		table->size = HASHTABLE_SIZE;
+	table->items = (label**)malloc(HASHTABLE_SIZE * sizeof(label*));
 
-	for (i = 0; i < SIZE; i++) {
+	for (i = 0; i < HASHTABLE_SIZE; i++) {
 		*(table->items + i) = NULL;
 
 	}
@@ -395,6 +397,7 @@ HashTable* create_table() {// size need to be prime number
 	return table;
 }
 //this function free's label and it's linked list
+//input: item from type 'label'
 static void free_item(label* item) {
 	if (item == NULL) {
 		return;
@@ -404,6 +407,7 @@ static void free_item(label* item) {
 
 }
 // Free's the table and all the pointers the table contains 
+//input: pointer to Hashtable
 void free_table(HashTable* table) {
 
 	for (int i = 0; i < table->size; i++) {
@@ -418,8 +422,10 @@ void free_table(HashTable* table) {
 }
 
 
-//this function can't used outside this file
+
 /* this function gives a unique hash code(int) to the given key(label's name) */
+//input: string
+//output: integer that represent the unique hash code of the string
 static int  hashcode(char* label_name)
 {
 	int i = 0;
@@ -428,7 +434,7 @@ static int  hashcode(char* label_name)
 	{
 		hash = hash * 7 + label_name[i];
 	}
-	return hash % SIZE;
+	return hash % HASHTABLE_SIZE;
 }
 
 //this function adding a new label to an exiting table by getting 3 argumets=(table, name's label , PC adress)
@@ -462,7 +468,7 @@ void insert_label(HashTable* table, char* label_name, int  adress)
 void print_table(HashTable* table) {
 	label* temp = NULL;
 	int i = 0;
-	for (i = 0; i < SIZE; i++) {
+	for (i = 0; i < HASHTABLE_SIZE; i++) {
 
 		temp = *(table->items + i);
 		while (temp != NULL) {
@@ -473,8 +479,11 @@ void print_table(HashTable* table) {
 	}
 }
 
-//this function is for passtwo
+//this function is for PassTwo
 //the function return the PC adress from an exiting table of a given label's name, if the label not in the table it returns (-1)
+//input 1: pointer to Hashtable
+//input 2: string that contains the label's name for searching in the table
+//output: if the label was found it returns it's pc address, else -1
 int get_adress_from_label(HashTable* table, char* label_name) {
 	label* temp = NULL;
 	int hash = 0;
