@@ -97,8 +97,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	return 0;
 }
 
-// input arg- the IOregister array
-// output result- each clock cycle the function promoting the relevant registers related to the timer, if timer is using.
+// input arg: the IOregister array
+// output result: each clock cycle the function promoting the relevant registers related to the timer, if timer is using.
 void routine_timer(int IORregister[])
 {
 	
@@ -114,11 +114,11 @@ void routine_timer(int IORregister[])
 	
 }
 
-// input arg1- file irq2
-// input arg2- the IOregisters array
-// input arg3- clock
-// input arg4- pointer to a counter named num
-// output result- the function scanning the file irq2 in order to generate interrupt when needed. 
+// input arg1: file irq2
+// input arg2: the IOregisters array
+// input arg3: clock
+// input arg4: pointer to a counter named num
+// output result: the function scanning the file irq2 in order to generate interrupt when needed. 
 // the pointer to num is required in order to save the last spot which cause the interrupt.  
 void routine_file(FILE *irq, int IORregister[], int clock, int* num)
 {
@@ -142,8 +142,8 @@ void routine_file(FILE *irq, int IORregister[], int clock, int* num)
 	
 }
 
-// input arg1- IOregister array. 
-// input arg2- pointer to an int- the timer disk 
+// input arg1: IOregister array. 
+// input arg2: pointer to an int- the timer disk 
 // When an instruction is involving the disk, this function promote the timerdisk (counter) by 1 each clock cycle. 
 // After the action complete (after 1024 clock cycle), the function generating an interrupt. 
 void routine_disk(int IORegister[] ,int* timerdisk)
@@ -177,6 +177,9 @@ void Extract_Variabales_from_PC(FILE* f, int  PC, int* opcode, int* rd, int* rs,
 	return;
 }
 
+//the function doing the instruction that matches the opcodes 0-13
+//input arg1: registers array 
+//input arg2-7: variabels of the current instruction including- opcode, number of registers (rd, rs, rt), pc and the next pc (as a pointer)
 void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next) {
 	switch (opcode)
 	{
@@ -227,6 +230,10 @@ void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, in
 	}
 }
 
+//the function doing the instruction that matches the opcodes 14-15, in this case gets (lw) or writes (sw) information in memout
+//input arg1: registers array 
+//input arg2-7: variabels of the current instruction including- opcode, number of registers (rd, rs, rt), pc and the next pc (as a pointer)
+//input and result arg8: poniter to memout file
 void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next, FILE* Memout)
 {
 	switch (opcode) {
@@ -244,6 +251,8 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	}
 	}
 }
+
+
 void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FILE* display,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
 	int prev_leds = IORegister[LEDS];
 	int prev_display = IORegister[DISPLAY];
