@@ -205,7 +205,9 @@ void handling_word(char mem[4096][56], char reg1[], char reg2[])
 		sprintf(new, "%08X", d);
 		
 	}
-	
+	if (m > 4096)
+		m = 4096;
+
 	strcpy(mem[m], new);
 }
 
