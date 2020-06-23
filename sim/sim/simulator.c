@@ -55,7 +55,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	int imm = 0;
 	int PC = 0;
 	int PC_next = 0;
-	int p = 0; // p=1 if we handling psika 
+	int p = 0; // p=1 if we handling interupt 
 	int IORegister[MAX_IOREG] = { 0 };
 	int Clock_Cycle = 0;
 	int timerdisk = 0;
@@ -97,6 +97,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	return 0;
 }
 
+// input arg- the IOregister array
+// output result- each clock cycle the function promoting the relevant registers related to the timer, if timer is using.
 void routine_timer(int IORregister[])
 {
 	
@@ -112,6 +114,12 @@ void routine_timer(int IORregister[])
 	
 }
 
+// input arg1- file irq2
+// input arg2- the IOregisters array
+// input arg3- clock
+// input arg4- pointer to a counter named num
+// output result- the function scanning the file irq2 in order to generate interrupt when needed. 
+// the pointer to num is required in order to save the last spot which cause the interrupt.  
 void routine_file(FILE *irq, int IORregister[], int clock, int* num)
 {
 	//int num=0;
@@ -134,6 +142,10 @@ void routine_file(FILE *irq, int IORregister[], int clock, int* num)
 	
 }
 
+// input arg1- IOregister array. 
+// input arg2- pointer to an int- the timer disk 
+// When an instruction is involving the disk, this function promote the timerdisk (counter) by 1 each clock cycle. 
+// After the action complete (after 1024 clock cycle), the function generating an interrupt. 
 void routine_disk(int IORegister[] ,int* timerdisk)
 {
 	if (IORegister[DISKSTATUS] == 1)
