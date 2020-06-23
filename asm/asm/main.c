@@ -148,13 +148,20 @@ void PassTwo(FILE* memin, HashTable* table)
 }
 
 
-
+// input args: input arg1- pointer to file f- file f is the temporary file which will be transfer to pass2. 
+// input arg2- mem[][]- array of arrays, the array constains all the memory which will be transfer forward. 
+// result: the function is printing the array into the temporary file f. 
 void printingon_txt(FILE* f, char mem[4096][56])
 {
 	for (int i = 0; i < 4096; i++)
 		fprintf(f, "%s\n", mem[i]);
 }
 
+
+// input args: input arg1- mem[][]- array of arrays of the memory. 
+// input arg2- reg1[]- memory address.
+// input arg3- reg2[]- data.
+// result: This function handling .word instruction. after this function the right cell with reg1 address will contain the data reg2. 
 void handling_word(char mem[4096][56], char reg1[], char reg2[])
 {
 	//reg1 and re2 is a number
@@ -201,7 +208,8 @@ void handling_word(char mem[4096][56], char reg1[], char reg2[])
 }
 
 
-
+//input arg- an array of arrays. After pass two function, the array will include all the memory which will be transfer forward.  
+// result arg- this function restart the array of array to be arrays of zeroes. 
 void restart_mem(char mem[4096][56])
 {
 	int i = 0;
@@ -214,6 +222,12 @@ void restart_mem(char mem[4096][56])
 	}
 }
 
+//this function prpuse is to clean and extract the entire relevant parts of the instruction. 
+// input arg: 
+// input arg1 - ins[]- the current instruction 
+// input arg2- reg[]- a new arrey, which will be contain the relevant part which now extract. 
+// input arg3- counter- the place in the instruction which we would like to extract the next part. (example: add $sp, $zero, $imm, 1  ----> in order to extract $sp, the counter will be in 3 )
+// result arg- reg[] array will conatain the relevant part of the instruction, after cleaning none relevant (',' , '#'.. etc.)
 int extract_next(char ins[], char reg[], int counter)
 {
 	int j = 0;
@@ -238,7 +252,9 @@ int extract_next(char ins[], char reg[], int counter)
 	return counterf;
 }
 
-int checking_label(char str[]) //  checking if its lable or not, returnning 1 if its a label, or 0 otherwise. 
+// input arg- str[]- array of the imm 
+//  checking if its lable or not, returnning 1 if its a label, or 0 otherwise. 
+int checking_label(char str[]) 
 {
 	int i = 0;
 	while (str[i] != '#' && str[i] != '\0')
@@ -252,32 +268,29 @@ int checking_label(char str[]) //  checking if its lable or not, returnning 1 if
 
 }
 
+// input arg:
+// input arg1- imm[]- the imm register as extracted from the assembly code. 
+// input arg2- new[] - new array. 
+// result arg- the function will handle the imm matter: hex or int negative or possitive will be convert here to hex 3 bits long. If its a label, will remain the same. 
 void handling_imm(char imm[], char new[])
 {
 	int  j = 0;
-	char pre[4];
+	char pre[4] = "000";
+	//pre[3] = '\0';
 	int len = strlen(imm);
-	int k = 0;
-	int i = 2;
-	if ((imm[1] == 'x' || imm[1] == 'X') && imm[0] == 48) //the imm is a hex number
+	int k = len-1;
+	int i = 2; //2
+	if ((imm[1] == 'x' || imm[1] == 'X') && imm[0] == 48) //the imm is a hex number 
 	{
-
-		for (k; k < 5 - len; k++)
+		
+		while (imm[k] != 'x' && imm[k] != 'X'&& i>-1)
 		{
-			pre[k] = '0';
+			pre[i] = imm[k];
+			i--;
+			k--;
 		}
-		while (imm[i] != '\0')
-		{
-			pre[k] = imm[i];
-			i = i + 1;
-			k = k + 1;
-
-
-		}
-		pre[k] = '\0';
 		strcpy(new, pre);
 		return;
-
 
 	}
 
@@ -292,7 +305,7 @@ void handling_imm(char imm[], char new[])
 	int a = atoi(imm);
 
 	sprintf(new, "%03X", a);
-	if (imm[0] == '-')
+	if (imm[0] == '-' || a>4095)
 	{
 		int leni = strlen(new);
 		char temp[4] = { '0' };
@@ -306,6 +319,9 @@ void handling_imm(char imm[], char new[])
 
 }
 
+// input args: input arg1 - ins[]- the line which currently handling by passone. In case that this function was called, the line contains label. So ins[]= lable 
+// input arg2- lable[]- a new array. 
+// result arg: the function is cleanning the lable, and restore the clean lable in the array label[]. 
 void clean_label(char ins[], char label[])
 {
 	int i = 0, j = 0;
