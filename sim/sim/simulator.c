@@ -165,6 +165,9 @@ void Extract_Variabales_from_PC(FILE* f, int  PC, int* opcode, int* rd, int* rs,
 	return;
 }
 
+//the function doing the instruction that matches the opcodes 0-13
+//input arg1: registers array 
+//input arg2-7: variabels of the current instruction including- opcode, number of registers (rd, rs, rt), pc and the next pc (as a pointer)
 void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next) {
 	switch (opcode)
 	{
@@ -215,6 +218,10 @@ void Instructions_0_to_13_opcode(int R[], int opcode, int rd, int rs, int rt, in
 	}
 }
 
+//the function doing the instruction that matches the opcodes 14-15, in this case gets (lw) or writes (sw) information in memout
+//input arg1: registers array 
+//input arg2-7: variabels of the current instruction including- opcode, number of registers (rd, rs, rt), pc and the next pc (as a pointer)
+//input and result arg3: poniter to memout file
 void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int* PC_next, FILE* Memout)
 {
 	switch (opcode) {

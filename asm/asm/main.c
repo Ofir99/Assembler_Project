@@ -54,7 +54,7 @@ void PassOne(FILE* f1, HashTable* table)
 		{
 			clean_label(instruction, label);
 			insert_label(table, label, PC);}
-		counter = extract_next(instruction, first, label_c);
+			counter = extract_next(instruction, first, label_c);
 		if (counter != -1)
 		{
 			counter = extract_next(instruction, reg1, counter);
@@ -79,7 +79,9 @@ void PassOne(FILE* f1, HashTable* table)
 	return;
 }
 
-void zerostr(char str[]) //zero array
+//this function gets an array of chars and intialize the array to 0
+//input 1: array of char characters
+void zerostr(char str[]) 
 {
 	int i = 0;
 	int len = strlen(str);
@@ -87,9 +89,10 @@ void zerostr(char str[]) //zero array
 		str[i] = 0;
 	}
 }
+
 //this function reading from the temporary file that created in PassOne and writing to a new file(memin) the same content, but only changing the label's name with their PC address
 //input 1: memin is an empty text file for writing 
-//input 2:pointer to table with labels that filled in PassOne
+//input 2: pointer to table with labels that filled in PassOne
 void PassTwo(FILE* memin, HashTable* table)
 {
 	char instruction[60] = { 0 };
@@ -127,10 +130,10 @@ void PassTwo(FILE* memin, HashTable* table)
 				immBefore[i - 6] = instruction[i];
 			}
 
-			//if label - returns code from table, else returns -1
+			//if label exists - returns its adress from the table, else returns -1
 			adress = get_adress_from_label(table, immBefore);
 
-			if (adress == -1) //if number
+			if (adress == -1) //if not a label, probably a number
 			{
 				//if it was already a number it was in hexa
 				fprintf(memin, "%s%03s\n", firstString, immBefore);
@@ -144,7 +147,6 @@ void PassTwo(FILE* memin, HashTable* table)
 	}
 
 	fclose(f1);
-
 }
 
 
