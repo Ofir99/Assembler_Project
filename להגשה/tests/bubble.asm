@@ -44,19 +44,19 @@ END:		lw $s2, $sp, $imm, 0 		# restore $s2
 .word 1924 15
 .word 1925 14
 .word 1926 13
-.word 1927 12
+.word 1927 120
 .word 1928 11
-.word 1929 10
+.word 1929 -10
 .word 1930 9
 .word 1931 8
 .word 1932 7
 .word 1933 6
-.word 1934 5
+.word 1934 50
 .word 1935 4
-.word 1936 3
+.word 1936 13
 .word 1937 2
 .word 1938 1
-.word 1939 1
+.word 1939 -1
 halt $zero, $zero, $zero, 0	# halt
 
 		
