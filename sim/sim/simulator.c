@@ -28,8 +28,6 @@ int main(int argc, char* argv[]) {
 	adding_zeros_rows(diskout);
 	Simulator(memout, trace, leds, diskout, hwregtrace, regout, cycles, display, irq2in);
 
-
-
 	fclose(memin);
 	fclose(diskin);
 	fclose(irq2in);
@@ -94,7 +92,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 
 		Clock_Cycle++;
 	}
-	fprintf(cycles, "%d\n", Clock_Cycle+1);//printing to cycles files the number of clock cycles
+	fprintf(cycles, "%d\n", Clock_Cycle+1);//printing to cycles file the number of clock cycles
 	print_regout(regout, R);
 	return 0;
 }
@@ -254,24 +252,26 @@ void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FIL
 		break;
 
 	case OUT:
-		IORegister[R[rs] + R[rt]] = R[rd];
-		fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file writing to registers operation
+		if (((R[rs] + R[rt]) < MAX_IOREG )&& (0<=(R[rs] + R[rt]))) {
+			IORegister[R[rs] + R[rt]] = R[rd];
+			fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file writing to registers operation
 
-		if (IORegister[LEDS] != prev_leds) //if leds register changed, write to leds file
-			fprintf(leds, "%d %08X\n", clock_cycle, IORegister[LEDS]);
+			if (IORegister[LEDS] != prev_leds) //if leds register changed, write to leds file
+				fprintf(leds, "%d %08X\n", clock_cycle, IORegister[LEDS]);
 
-		if (IORegister[DISPLAY] != prev_display) //if display register changed, write to display file
-			fprintf(display, "%d %08X\n", clock_cycle, IORegister[DISPLAY]);
-		
-		if ((IORegister[DISKSTATUS] ==0)&& (IORegister[DISKCMD] != 0)){//checking if disk is free and if its read/write command to disk
-		read_write_to_disk(diskout, memout, IORegister[DISKCMD], IORegister[DISKSECTOR], IORegister[DISKBUFFER]);
-		IORegister[DISKSTATUS] = 1;//disk is busy
+			if (IORegister[DISPLAY] != prev_display) //if display register changed, write to display file
+				fprintf(display, "%d %08X\n", clock_cycle, IORegister[DISPLAY]);
+
+			if ((IORegister[DISKSTATUS] == 0) && (IORegister[DISKCMD] == 1 || IORegister[DISKCMD] == 2)) {//checking if disk is free and if its read/write command to disk
+				read_write_to_disk(diskout, memout, IORegister[DISKCMD], IORegister[DISKSECTOR], IORegister[DISKBUFFER]);
+				IORegister[DISKSTATUS] = 1;//disk is busy
+			}
 		}
 		break;
 	}
 }
 
-//printting to trace file each clock cycle
+//printing to trace file each clock cycle
 void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int R[]) {
 
 	fprintf(trace, "%08X ", PC);
