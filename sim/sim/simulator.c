@@ -57,10 +57,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	int PC_next = 0;
 	int p = 0; // p=1 if we handling interupt 
 	int IORegister[MAX_IOREG] = { 0 };
-	int Clock_Cycle = 0;
+	unsigned int Clock_Cycle = 0;
 	int timerdisk = 0;
-
-	
 
 	while (1) //loop until halt opcode  
 	{
@@ -93,8 +91,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 		Clock_Cycle++;
 	}
 	fprintf(cycles, "%d\n", Clock_Cycle+1);//printing to cycles file the number of clock cycles
-	print_regout(regout, R);
-	return 0;
+	print_regout(regout, R);//printing R2-R15 
+	return;
 }
 
 // input arg: the IOregister array
@@ -163,6 +161,8 @@ void routine_disk(int IORegister[] ,int* timerdisk)
 
 
 //this function move the pointer in file to PC address
+//input arg1: pointer to file
+//input arg2: the required PC address the user want to move the pointer for
 void Jump_to_PC(FILE* f, int PC) {
 	fseek(f, PC * 10, SEEK_SET);//10 bytes in line 
 }
@@ -252,7 +252,12 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	}
 }
 
-
+//the function doing the instruction that matches the opcodes 16-18
+//input arg 1-5: pointer to files 
+//input arg 6: opcode 
+//input arg7: array of registers 
+//input arg8: array of IO registers
+//input arg9-13: variabels of the current instruction including-  number of registers (rd, rs, rt),  next pc (as a pointer), clock cycle
 void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FILE* display,int opcode, int R[], int IORegister[], int rd, int rs, int rt, int* PC_next, int clock_cycle) {
 	int prev_leds = IORegister[LEDS];
 	int prev_display = IORegister[DISPLAY];
@@ -292,7 +297,10 @@ void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FIL
 	}
 }
 
-//printing to trace file each clock cycle
+//printing to trace file each clock cycle -pc address intruction, and all the data in the registers.
+//input arg1: pointer to file for printing
+//input arg2-7: variabels of the current instruction including-pc, opcode, rd, rs,rt,immediate
+//input arg 8- the current registers array
 void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int R[]) {
 
 	fprintf(trace, "%08X ", PC);
@@ -302,14 +310,21 @@ void print_trace(FILE* trace,int PC,int opcode,int rd,int rs,int rt,int imm,int 
 		fprintf(trace, "%08X ", R[i]);
 	fprintf(trace, "\n");
 }
-
-void print_regout(FILE *regout,int R[]) {//printing R2-R15
+//this function prints to a file the data in registers R2-R15
+//input arg1: pointer to file for printing
+//input arg2 :array of the registers 
+void print_regout(FILE *regout,int R[]) {
 	int i = 2;//
 
 	for (i = 2; i < MAX_REG; i++) 
 		fprintf(regout, "%08X\n", R[i]);
 }
-
+//this function read/write to disk 
+// input arg1: pointer to file disk
+//input arg2: pointer to memory file
+//input arg3: the command for function: 0 = no command, 1 = read sector, 2 = write sector
+//input arg4:sector number of disk, range of sectors:0-127
+//input arg5:Memory address of a buffer containing the sector being read or written.
 void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector, int diskbuffer) {
 	int count = 0;
 	char line[9] = { 0 };
@@ -323,7 +338,7 @@ void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector
 			fprintf(memout, "%s\n", line);
 			count++;}
 	}
-	else//write sector
+	if (diskcmd == 2) //write sector
 	{
 		while (count < 128) {
 			fscanf(memout, "%s\n", line);
@@ -332,7 +347,8 @@ void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector
 	}
 }
 
-//adding zero rows to file until there is (128*128) rows in file
+//this function adding zero rows to file until there is (128*128) rows in file
+//input: pointer to file
 void adding_zeros_rows(FILE* f) {
 	int count_line = 0;
 	char line[9] = { 0 };
@@ -346,7 +362,9 @@ void adding_zeros_rows(FILE* f) {
 		count_line++;
 	}
 }
-//duplicate source file to target file
+//this function duplicate source file to target file
+//input arg1: pointer to file the user want to duplicate
+//input arg2: pointer to the target file
 void Copy_Text_File(FILE* source, FILE* target) {
 	char line[9] = { 0 };
 	while (!feof(source)) {
