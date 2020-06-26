@@ -56,13 +56,12 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 	int PC = 0;
 	int PC_next = 0;
 	int p = 0; // p=1 if we handling interupt 
-	int IORegister[MAX_IOREG] = { 0 };
-	unsigned int Clock_Cycle = 0;
+	unsigned int IORegister[MAX_IOREG] = { 0 };
+	unsigned int Clock_Cycle = IORegister[CLKS];
 	int timerdisk = 0;
 
 	while (1) //loop until halt opcode  
 	{
-		
 		if (PC_next == IORegister[IRQRETURN])
 			p = 0;
 		if (((IORegister[IRQ0ENABLE] && IORegister[IRQ0STATUS])|| (IORegister[IRQ1ENABLE] && IORegister[IRQ1STATUS]) || (IORegister[IRQ2ENABLE] && IORegister[IRQ2STATUS])) && p==0)
@@ -74,8 +73,7 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 		routine_file(irq2in, IORegister, Clock_Cycle, &num);
 		routine_timer(IORegister);
 		routine_disk(IORegister, &timerdisk);
-		
-		IORegister[CLKS] = Clock_Cycle;
+
 		PC = PC_next;
 		PC_next = PC + 1;
 		
@@ -88,7 +86,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 		if (opcode >= RETI && opcode <= OUT) IO_Instructions(hwregtrace,leds,diskout, Memout,display, opcode,R,IORegister, rd,rs,rt, &PC_next, Clock_Cycle);
 		if (opcode == HALT) break;//exit program
 
-		Clock_Cycle++;
+		IORegister[CLKS]++;
+		Clock_Cycle = IORegister[CLKS];
 	}
 	fprintf(cycles, "%d\n", Clock_Cycle+1);//printing to cycles file the number of clock cycles
 	print_regout(regout, R);//printing R2-R15 
@@ -239,13 +238,13 @@ void Instructions_lw_sw(int R[], int opcode, int rd, int rs, int rt, int PC, int
 	switch (opcode) {
 	case LW:
 	{
-		Jump_to_PC(Memout, R[rs] + R[rt]);
+		Jump_to_PC(Memout, MASK_REG(R[rs] + R[rt]));
 		fscanf(Memout, "%X\n", &R[rd]); 
 		break;
 	}
 	case SW: 
 	{
-		Jump_to_PC(Memout, R[rs] + R[rt]);
+		Jump_to_PC(Memout, MASK_REG(R[rs] + R[rt]));
 		fprintf(Memout, "%08X\n", R[rd]);
 		break;
 	}
@@ -273,14 +272,16 @@ void IO_Instructions(FILE* hwregtrace,FILE* leds, FILE* diskout,FILE* memout,FIL
 		break;
 
 	case IN:
-		R[rd] = IORegister[R[rs] + R[rt]];
-		fprintf(hwregtrace, "%d READ %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file reading to registers operation
+		if (((R[rs] + R[rt]) < MAX_IOREG) && (0 <= (R[rs] + R[rt]))) {//checking there is no  exception
+			R[rd] = IORegister[R[rs] + R[rt]];
+			fprintf(hwregtrace, "%d READ %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//'reading' to registers operation
+		}
 		break;
 
 	case OUT:
-		if (((R[rs] + R[rt]) < MAX_IOREG )&& (0<=(R[rs] + R[rt]))) {
+		if (((R[rs] + R[rt]) < MAX_IOREG )&& (0<=(R[rs] + R[rt]))) {//checking there is no  exception
 			IORegister[R[rs] + R[rt]] = R[rd];
-			fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//printing to file writing to registers operation
+			fprintf(hwregtrace, "%d WRITE %s %08x\n", clock_cycle, (IOR_name + R[rs] + R[rt]), R[rd]);//'writing' to registers operation
 
 			if (IORegister[LEDS] != prev_leds) //if leds register changed, write to leds file
 				fprintf(leds, "%d %08X\n", clock_cycle, IORegister[LEDS]);

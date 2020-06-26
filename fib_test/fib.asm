@@ -41,4 +41,4 @@ L3:
 	out $t1, $zero, $imm, 9		# write the new led pattern
 	out $zero, $zero, $imm, 5	# clear irq2 status
 	reti $zero, $zero, $zero, 0	# return from interrupt
-	.word 1024 7
+	.word 1024 18
