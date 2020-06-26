@@ -352,9 +352,12 @@ void read_write_to_disk(FILE* diskout, FILE* memout, int diskcmd, int disksector
 void adding_zeros_rows(FILE* f) {
 	int count_line = 0;
 	char line[9] = { 0 };
+	int valid = 0;
+
 	fseek(f, 0, SEEK_SET);
 	while (!feof(f)) {
-		fscanf(f, "%s\n", line);
+		valid= fscanf(f, "%s\n", line);
+		if (valid != -1)//check if the line is not empty
 		count_line++;
 	}
 	while (count_line < (128 * 128)) {
@@ -367,8 +370,10 @@ void adding_zeros_rows(FILE* f) {
 //input arg2: pointer to the target file
 void Copy_Text_File(FILE* source, FILE* target) {
 	char line[9] = { 0 };
+	int valid = 0;
 	while (!feof(source)) {
-		fscanf(source, "%s\n", line);
+		valid= fscanf(source, "%s\n", line);
+		if(valid != -1)//check if the line is not empty
 		fprintf(target, "%s\n", line);
 	}
 }
