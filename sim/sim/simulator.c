@@ -75,7 +75,8 @@ void Simulator(FILE* Memout,FILE *trace, FILE *leds, FILE *diskout,FILE *hwregtr
 		routine_disk(IORegister, &timerdisk);
 
 		PC = PC_next;
-		PC_next = PC + 1;
+		if(PC<4095) PC_next = PC + 1;
+		else PC_next = 0; //if there is exception from memory, reset PC
 		
 		Extract_Variabales_from_PC(Memout, PC, &opcode, &rd, &rs, &rt, &imm);
 		R[$IMM] = imm;//update $imm register
